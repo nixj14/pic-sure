@@ -26,6 +26,9 @@ public class ResourceWebClientTest {
     private final static String testURL = "http://localhost:"+port;
     private final ResourceWebClient cut = new ResourceWebClient();
 
+    private org.apache.log4j.Logger logger =
+            org.apache.log4j.Logger.getLogger(this.getClass());
+
     @Rule
     public WireMockClassRule wireMockRule = new WireMockClassRule(port);
 
@@ -146,6 +149,8 @@ public class ResourceWebClientTest {
     public void testQuery() throws JsonProcessingException{
         String queryResults = json.writeValueAsString(new QueryStatus());
 
+        logger.info("testQuery() starting");
+
         wireMockRule.stubFor(any(urlEqualTo("/query"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -167,6 +172,7 @@ public class ResourceWebClientTest {
         }
 
         //Everything goes correctly
+        logger.info("testURL:"+testURL);
         QueryStatus result = cut.query(testURL, request);
         assertNotNull("Result should not be null", result);
 

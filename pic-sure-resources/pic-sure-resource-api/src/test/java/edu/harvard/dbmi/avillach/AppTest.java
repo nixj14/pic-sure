@@ -10,6 +10,10 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
+
+    private org.apache.log4j.Logger logger =
+            org.apache.log4j.Logger.getLogger(this.getClass());
+
     /**
      * Create the test case
      *
