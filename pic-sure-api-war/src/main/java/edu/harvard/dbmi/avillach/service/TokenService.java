@@ -79,18 +79,21 @@ public class TokenService {
                         + ex.getClass().getSimpleName() + ": " + ex.getMessage());
                 throw new ApplicationException("Inner problem: encoding is not supported.");
             } catch (JwtException | IllegalArgumentException ex) {
+                // TODO: ERROR REFACTOR - Should this be changed to use the standard exception handling?
                 logger.error("_inspectToken() throws: " + e.getClass().getSimpleName() + ", " + e.getMessage());
                 tokenInspection.message = "error: " + e.getMessage();
                 return tokenInspection;
             }
 
         } catch (JwtException | IllegalArgumentException e) {
+            // TODO: ERROR REFACTOR - Should this be changed to use the standard exception handling?
             logger.error("_inspectToken() throws: " + e.getClass().getSimpleName() + ", " + e.getMessage());
             tokenInspection.message = "error: " + e.getMessage();
             return tokenInspection;
         }
 
         if (jws == null) {
+            // TODO: ERROR REFACTOR - Should this be changed to use the standard exception handling?
             logger.error("_inspectToken() get null for claims by parsing Token - " + token );
             tokenInspection.message = "error: cannot get user info from the token given";
             return tokenInspection;

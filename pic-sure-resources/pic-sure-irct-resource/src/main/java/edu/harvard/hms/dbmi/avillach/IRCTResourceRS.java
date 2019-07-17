@@ -6,6 +6,7 @@ import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.PicsureQueryException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
@@ -77,6 +78,7 @@ public class IRCTResourceRS implements IResourceRS
 	@GET
 	@Path("/status")
 	public Response status() {
+		// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 		return Response.ok().build();
 	}
 
@@ -86,10 +88,10 @@ public class IRCTResourceRS implements IResourceRS
 	public ResourceInfo info(QueryRequest queryRequest) {
 		logger.debug("Calling IRCT Resource info()");
 		if (targetURL == null || targetURL.isEmpty())
-			throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 
 		if (queryRequest == null){
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 		if (queryRequest.getResourceCredentials() == null){
 			throw new NotAuthorizedException(MISSING_CREDENTIALS_MESSAGE);
@@ -103,6 +105,7 @@ public class IRCTResourceRS implements IResourceRS
 		HttpResponse response = retrieveGetResponse(composeURL(targetURL, pathName), createAuthorizationHeader(token));
 		if (response.getStatusLine().getStatusCode() != 200){
 			logger.error(targetURL + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, targetURL);
 		}
 		return new ResourceInfo().setName("IRCT Resource : " + targetURL)
@@ -117,10 +120,10 @@ public class IRCTResourceRS implements IResourceRS
 		logger.debug("Calling IRCT Resource search()");
 		try {
 			if (targetURL == null || targetURL.isEmpty()) {
-				throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+				throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 			}
 			if (searchJson == null) {
-				throw new ProtocolException(ProtocolException.MISSING_DATA);
+				throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 			}
 			Map<String, String> resourceCredentials = searchJson.getResourceCredentials();
 			if (resourceCredentials == null) {
@@ -132,7 +135,7 @@ public class IRCTResourceRS implements IResourceRS
 			}
 			Object search = searchJson.getQuery();
 			if (search == null) {
-				throw new ProtocolException((ProtocolException.MISSING_DATA));
+				throw new ProtocolException((PicsureNaming.ExceptionMessages.MISSING_DATA));
 			}
 
 			if(search instanceof String) {
@@ -150,6 +153,7 @@ public class IRCTResourceRS implements IResourceRS
 					if (response.getStatusLine().getStatusCode() == 500 && responseObject.get("message") != null && responseObject.get("message").asText().equals("No entities were found.")) {
 						return results;
 					}
+					// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 					throwResponseError(response, targetURL);
 				}
 				results.setResults(readObjectFromResponse(response, Object.class));
@@ -161,7 +165,7 @@ public class IRCTResourceRS implements IResourceRS
 					List<String> entityPaths = mapper.readValue(mapper.writeValueAsString(search), List.class);
 				} catch(Exception e) {
 					logger.error("Could not parse jsonPaths, client made a mistake of some kind : " + mapper.writeValueAsString(search));
-					throw new ProtocolException(ProtocolException.INCORRECTLY_FORMATTED_REQUEST);
+					throw new ProtocolException(PicsureNaming.ExceptionMessages.INCORRECTLY_FORMATTED_REQUEST);
 				}
 				HttpResponse response = retrievePostResponse(composeURL(targetURL, "resourceService/jsonPath"), createAuthorizationHeader(token), mapper.writeValueAsString(search));
 				SearchResults results = new SearchResults();
@@ -183,10 +187,10 @@ public class IRCTResourceRS implements IResourceRS
 	public QueryStatus query(QueryRequest queryJson) {
 		logger.debug("Calling IRCT Resource query()");
 		if (targetURL == null || targetURL.isEmpty()){
-			throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 		}
 		if (queryJson == null) {
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 		Map<String, String> resourceCredentials = queryJson.getResourceCredentials();
 		if (resourceCredentials == null) {
@@ -200,7 +204,7 @@ public class IRCTResourceRS implements IResourceRS
 		//TODO Do we want/need to do it this way, should we revert query field back to string?
 		Object queryObject = queryJson.getQuery();
 		if (queryObject == null) {
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 
 		JsonNode queryNode = json.valueToTree(queryObject);
@@ -219,6 +223,7 @@ public class IRCTResourceRS implements IResourceRS
 		HttpResponse response = retrievePostResponse(composeURL(targetURL, pathName), createAuthorizationHeader(token), queryString);
 		if (response.getStatusLine().getStatusCode() != 200) {
 			logger.error(targetURL + " did not return a 200: {} {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, targetURL);
 		}
 		//Returns an object like so: {"resultId":230464}
@@ -258,10 +263,10 @@ public class IRCTResourceRS implements IResourceRS
 	public QueryStatus queryStatus(@PathParam("resourceQueryId") String queryId, QueryRequest statusQuery) {
 		logger.debug("calling IRCT Resource queryStatus() for query {}", queryId);
 		if (targetURL == null || targetURL.isEmpty()){
-			throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 		}
 		if (statusQuery == null){
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 		Map<String, String> resourceCredentials = statusQuery.getResourceCredentials();
 		if (resourceCredentials == null) {
@@ -275,6 +280,7 @@ public class IRCTResourceRS implements IResourceRS
 		HttpResponse response = retrieveGetResponse(composeURL(targetURL, pathName), createAuthorizationHeader(token));
 		if (response.getStatusLine().getStatusCode() != 200) {
 			logger.error(targetURL + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, targetURL);
 		}
 		//Returns an object like so: {"resultId":230958,"status":"AVAILABLE"}
@@ -306,10 +312,10 @@ public class IRCTResourceRS implements IResourceRS
 	public Response queryResult(@PathParam("resourceQueryId") String queryId, QueryRequest resultRequest) {
 		logger.debug("calling IRCT Resource queryResult() for query {}", queryId);
 		if (targetURL == null || targetURL.isEmpty()){
-			throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 		}
 		if (resultRequest == null){
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 		Map<String, String> resourceCredentials = resultRequest.getResourceCredentials();
 		if (resourceCredentials == null) {
@@ -324,9 +330,11 @@ public class IRCTResourceRS implements IResourceRS
 		HttpResponse response = retrieveGetResponse(composeURL(targetURL, pathName), createAuthorizationHeader(token));
 		if (response.getStatusLine().getStatusCode() != 200) {
 			logger.error(targetURL + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, targetURL);
 		}
 		try {
+			// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 			return Response.ok(response.getEntity().getContent()).build();
 		} catch (IOException e){
 			//TODO: Deal with this
@@ -343,7 +351,7 @@ public class IRCTResourceRS implements IResourceRS
 	}
 
 	private PicSureStatus mapStatus(String resourceStatus){
-		//TODO what are actually all the options?  What should the default be? What if it's something that doesn't match?
+		//TODO: ARCHITECTURE - what are actually all the options?  What should the default be? What if it's something that doesn't match? [!nbenik]
 		switch (resourceStatus) {
 		case "RUNNING":
 			return PicSureStatus.PENDING;

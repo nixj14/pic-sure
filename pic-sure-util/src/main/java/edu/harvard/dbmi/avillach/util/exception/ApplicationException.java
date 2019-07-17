@@ -12,10 +12,6 @@ import javax.ws.rs.core.Response;
  */
 public class ApplicationException extends WebApplicationException{
 
-    public final static String MISSING_TARGET_URL = "Resource is missing target URL";
-    public final static String MISSING_RESOURCE_PATH = "Resource is missing resourceRS path";
-    public final static String MISSING_RESOURCE = "Query is missing Resource";
-
     private Object content;
 
     public ApplicationException() {

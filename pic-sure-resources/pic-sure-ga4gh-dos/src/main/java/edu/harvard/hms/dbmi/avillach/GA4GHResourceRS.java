@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
@@ -80,7 +81,7 @@ public class GA4GHResourceRS implements IResourceRS
 	 */
 	private void retrieveTargetUrl(QueryRequest queryRequest){
         if (TARGET_URL == null)
-            throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
+            throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
 	}
 
 	@GET
@@ -89,6 +90,7 @@ public class GA4GHResourceRS implements IResourceRS
         Map<String, Object> statusResponse = new HashMap<>();
         statusResponse.put("status", "ok");
         statusResponse.put("name", "GA4GH-DOS-Server_ResourceInterface");
+		// TODO: STANDARDIZED RETURN - should we change this?
 		return Response.ok().entity(statusResponse).build();
 	}
 
@@ -238,11 +240,11 @@ public class GA4GHResourceRS implements IResourceRS
 
 		Map<String, String> resourceCredentials = queryJson.getResourceCredentials();
 		/*if (resourceCredentials == null) {
-			throw new NotAuthorizedException(MISSING_CREDENTIALS_MESSAGE);
+			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS_MESSAGE);
 		}
 		String token = resourceCredentials.get(BEARER_TOKEN);
 		if (token == null) {
-			throw new NotAuthorizedException(MISSING_CREDENTIALS_MESSAGE);
+			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS_MESSAGE);
 		}*/
 
         long starttime = new Date().getTime();
@@ -273,8 +275,9 @@ public class GA4GHResourceRS implements IResourceRS
 		// Get the response from the endpoint URL, this is (for now) a GET
 		HttpResponse response = edu.harvard.hms.dbmi.avillach.HttpClientUtil.retrieveGetResponse(endpointURL, null);
 		if (response.getStatusLine().getStatusCode() != 200) {
-			logger.error("The query endpoint did not return a 200. code:{} reason:{} ",
+			logger.error("The query endpoint did not return a 200. code:{} URL:{} reason:{} ",
                     response.getStatusLine().getStatusCode(),
+					endpointURL,
                     response.getStatusLine().getReasonPhrase()
             );
 			// Throw the HTTP error as an RS Exception to the client.
@@ -282,7 +285,7 @@ public class GA4GHResourceRS implements IResourceRS
 		}
 
 		// If the HTTP Response is a success, then returns an object like so: {"resultId":230464}
-		//TODO later Add things like duration and expiration
+		// TODO later Add things like duration and expiration
 		try {
 			String responseBody = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 			JsonNode responseNode = json.readTree(responseBody);
@@ -295,7 +298,7 @@ public class GA4GHResourceRS implements IResourceRS
 			status.setSizeInBytes(responseBody.length());
 			return status;
 		} catch (IOException e){
-			//TODO: Deal with this
+			// TODO: Deal with this
 			throw new ApplicationException(e);
 		}
 	}
@@ -366,6 +369,7 @@ public class GA4GHResourceRS implements IResourceRS
 		}
 
 		try {
+			// TODO: STANDARDIZED RETURN - should we change this?
 			return Response.ok(response.getEntity().getContent()).build();
 		} catch (IOException e){
 			//TODO: Deal with this
@@ -383,6 +387,7 @@ public class GA4GHResourceRS implements IResourceRS
 			case "ERROR":
 				return PicSureStatus.ERROR;
 			default:
+				// TODO: ARCHITECTURE - Yes, what should happen if an undefined status is returned? Should it ever be returned? [nbenik]
 				return null;
 		}
 	}

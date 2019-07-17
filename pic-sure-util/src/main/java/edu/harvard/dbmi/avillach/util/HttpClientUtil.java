@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static edu.harvard.dbmi.avillach.util.PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR;
+
 public class HttpClientUtil {
 	private final static ObjectMapper json = new ObjectMapper();
 
@@ -57,6 +59,7 @@ public class HttpClientUtil {
             return simpleGet(client, uri, headers);
 		} catch (ApplicationException e) {
 			//TODO: Write custom exception
+			//TODO, this looks like a custom exception to me [nbenik]
 			throw new ResourceInterfaceException(uri, e);
 		}
 	}
@@ -104,6 +107,7 @@ public class HttpClientUtil {
 		    return simplePost(uri, client, new StringEntity(body), headerList.toArray(new Header[headerList.size()]));
 		} catch (ApplicationException | UnsupportedEncodingException e) {
 			//TODO: Write custom exception
+			// TODO, this looks custom to me [nbenik]
 			logger.error("retrievePostResponse() throw resourceInterfaceException: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 			throw new ResourceInterfaceException(uri, e);
 		}
@@ -119,8 +123,9 @@ public class HttpClientUtil {
 			String responseBody = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 			return json.readValue(responseBody, new TypeReference<List<T>>() {});
 		} catch (IOException e) {
-      logger.error("readListFromResponse() "+e.getMessage());
-      //TODO: Write custom exception
+      		logger.error("readListFromResponse() "+e.getMessage());
+	  		//TODO: Write custom exception
+			// TODO, I think the customization for this is in the ExceptionMapper? [nbenik]
 			throw new ApplicationException("Incorrect list type returned");
 		}
 	}
@@ -134,6 +139,7 @@ public class HttpClientUtil {
         } catch (IOException e) {
             logger.error("readObjectFromResponse() "+e.getMessage());
             //TODO: Write custom exception
+			// TODO, I think the customization for this is in the ExceptionMapper? [nbenik]
             throw new ApplicationException("Incorrect object type returned", e);
         }
     }
@@ -179,7 +185,7 @@ public class HttpClientUtil {
 		} catch (IOException ex){
 			logger.error("simplePost() Exception: " + ex.getMessage() +
 					", cannot get response by POST from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 
@@ -200,7 +206,7 @@ public class HttpClientUtil {
 			return response.getEntity().getContent();
 		} catch (IOException ex){
 			logger.error("simplePost() cannot get content by POST from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 
@@ -219,7 +225,7 @@ public class HttpClientUtil {
 		} catch (IOException ex){
 			logger.error("simplePost() Exception: " + ex.getMessage()
 					+ ", cannot parse content from by POST from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 
@@ -246,7 +252,7 @@ public class HttpClientUtil {
 			return client.execute(get);
 		} catch (IOException ex){
 			logger.error("simpleGet() cannot get response by GET from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 
@@ -260,14 +266,14 @@ public class HttpClientUtil {
 			response = client.execute(get);
 		} catch (IOException ex){
 			logger.error("simpleGet() cannot get response by GET from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 
 		try {
 			return response.getEntity().getContent();
 		} catch (IOException ex){
 			logger.error("simpleGet() cannot get content by GET from url: " + uri);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 
@@ -284,7 +290,7 @@ public class HttpClientUtil {
 			return objectMapper.readTree(simpleGet(uri, client, headers));
 		} catch (IOException ex){
 			logger.error("simpleGet() cannot parse content from by GET from url: " + uri, ex);
-			throw new ApplicationException("Inner problem, please contact system admin and check the server log");
+			throw new ApplicationException(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR);
 		}
 	}
 }

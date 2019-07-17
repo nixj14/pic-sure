@@ -2,6 +2,8 @@ package edu.harvard.dbmi.avillach.service;
 
 import edu.harvard.dbmi.avillach.data.entity.BaseEntity;
 import edu.harvard.dbmi.avillach.data.repository.BaseRepository;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
+import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.response.PICSUREResponse;
 import org.slf4j.Logger;
@@ -32,7 +34,7 @@ public abstract class PicsureBaseEntityService <T extends BaseEntity> {
         T t = (T) baseRepository.getById(UUID.fromString(id));
 
         if (t == null)
-            return PICSUREResponse.protocolError(type.getSimpleName() + " is not found by given " +
+            throw new ProtocolException(type.getSimpleName() + " is not found by given " +
                     type.getSimpleName().toLowerCase() + " ID: " + id);
         else
             return PICSUREResponse.success(t);
@@ -46,23 +48,19 @@ public abstract class PicsureBaseEntityService <T extends BaseEntity> {
         ts = baseRepository.list();
 
         if (ts == null)
-            return PICSUREResponse.applicationError("Error occurs when listing all "
-                    + type.getSimpleName() +
-                    "s.");
+            throw new ApplicationException("Error occurs when listing all " + type.getSimpleName());
 
         return PICSUREResponse.success(ts);
     }
 
     public Response addEntity(List<T> entities, BaseRepository baseRepository){
         if (entities == null || entities.isEmpty())
-            return PICSUREResponse.protocolError("No " + type.getSimpleName().toLowerCase() +
-                    " to be added.");
+            throw new ProtocolException("No " + type.getSimpleName().toLowerCase() + " to be added.");
 
         List<T> addedEntities = addOrUpdate(entities, true, baseRepository);
 
         if (addedEntities.isEmpty())
-            return PICSUREResponse.protocolError("No " + type.getSimpleName().toLowerCase() +
-                    "(s) has been added.");
+            throw new ProtocolException("No " + type.getSimpleName().toLowerCase() + "(s) has been added.");
 
         if (addedEntities.size() < entities.size())
             return PICSUREResponse.success(Integer.toString(entities.size()-addedEntities.size())
@@ -77,15 +75,12 @@ public abstract class PicsureBaseEntityService <T extends BaseEntity> {
 
     public Response updateEntity(List<T> entities, BaseRepository baseRepository){
         if (entities == null || entities.isEmpty())
-            return PICSUREResponse.protocolError("No " + type.getSimpleName().toLowerCase() +
-                    " to be updated.");
+            throw new ProtocolException("No " + type.getSimpleName().toLowerCase() + " to be updated.");
 
         List<T> addedEntities = addOrUpdate(entities, false, baseRepository);
 
         if (addedEntities.isEmpty())
-            return PICSUREResponse.protocolError("No " + type.getSimpleName().toLowerCase() +
-                    "(s) has been updated.");
-
+            throw new ProtocolException("No " + type.getSimpleName().toLowerCase() + "(s) has been updated.");
 
         if (addedEntities.size() < entities.size())
             return PICSUREResponse.success(Integer.toString(entities.size()-addedEntities.size())
@@ -96,7 +91,6 @@ public abstract class PicsureBaseEntityService <T extends BaseEntity> {
 
         return PICSUREResponse.success("All " + type.getSimpleName().toLowerCase() +
                 "(s) are updated.", addedEntities);
-
     }
 
     protected List<T> addOrUpdate(@NotNull List<T> entities, boolean forAdd, BaseRepository baseRepository){
@@ -125,17 +119,15 @@ public abstract class PicsureBaseEntityService <T extends BaseEntity> {
         UUID uuid = UUID.fromString(id);
         T t = (T) baseRepository.getById(uuid);
         if (t == null)
-            return PICSUREResponse.protocolError(type.getSimpleName() +
+            throw new ProtocolException(type.getSimpleName() +
                     " is not found by " + type.getSimpleName().toLowerCase() +
                     " ID");
 
         baseRepository.remove(t);
 
         t = (T) baseRepository.getById(uuid);
-        if (t != null){
-            return PICSUREResponse.applicationError("Cannot delete the " + type.getSimpleName().toLowerCase()+
-                    " by id: " + id);
-        }
+        if (t != null)
+            throw new ApplicationException("Cannot delete the " + type.getSimpleName().toLowerCase() + " by id: " + id);
 
         return PICSUREResponse.success("Successfully deleted " + type.getSimpleName().toLowerCase() +
                         " by id: " + id + ", listing rest of the " + type.getSimpleName().toLowerCase() +

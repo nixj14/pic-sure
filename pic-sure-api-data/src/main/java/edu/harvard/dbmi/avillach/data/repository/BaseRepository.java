@@ -142,6 +142,8 @@ public abstract class BaseRepository<T extends BaseEntity, K> {
 		query.select(root);
 		if (predicates != null && predicates.length > 0)
 			query.where(predicates);
+
+		// TODO: ERROR REFACTOR - Should we let this throw a PersistenceException to be handled by the exception mapper subsystem?
 		try{
 			return em().createQuery(query)
 					.getResultList();
@@ -163,6 +165,8 @@ public abstract class BaseRepository<T extends BaseEntity, K> {
 		query.select(root);
 		if (predicates != null && predicates.length > 0)
 			query.where(predicates);
+
+		// TODO: ERROR REFACTOR - Should we let this throw a PersistenceException to be handled by the exception mapper subsystem?
 		try {
 			return (T) em().createQuery(query)
 				.getSingleResult();

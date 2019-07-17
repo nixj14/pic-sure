@@ -59,6 +59,7 @@ public class HttpClientUtil {
 			String responseBody = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 			return json.readValue(responseBody, new TypeReference<List<T>>() {});
 		} catch (IOException e) {
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			e.printStackTrace();
 			return new ArrayList<T>();
 		}
@@ -78,6 +79,7 @@ public class HttpClientUtil {
                 return json.readValue(jn.get("data_objects").toString(), new TypeReference<List<T>>() {});
             }
 		} catch (IOException e) {
+			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			e.printStackTrace();
 			return new ArrayList<T>();
 		}

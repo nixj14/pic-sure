@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.dbmi.avillach.domain.*;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
-import edu.harvard.dbmi.avillach.util.exception.NotAuthorizedException;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -44,20 +45,21 @@ public class ResourceWebClient {
         logger.debug("Calling ResourceWebClient info()");
         try {
             if (queryRequest == null){
-                throw new ProtocolException(ProtocolException.MISSING_DATA);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
             }
             if (queryRequest.getResourceCredentials() == null){
-                throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
+                throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
             }
             if (rsURL == null){
-                throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
+                throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
             }
             logger.debug("Calling /info at ResourceURL: {}", rsURL);
             String pathName = "/info";
             String body = json.writeValueAsString(queryRequest);
             HttpResponse resourcesResponse = retrievePostResponse(composeURL(rsURL, pathName), createAuthorizationHeader(queryRequest.getResourceCredentials()), body);
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
-                logger.error("ResourceRS did not return a 200");
+                logger.error("ResourceRS ("+rsURL+") did not return a 200");
+                // TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
                 throwResponseError(resourcesResponse, rsURL);
             }
             return readObjectFromResponse(resourcesResponse, ResourceInfo.class);
@@ -70,14 +72,14 @@ public class ResourceWebClient {
         logger.debug("Calling ResourceWebClient search()");
         try {
             if (searchQueryRequest == null || searchQueryRequest.getQuery() == null){
-                throw new ProtocolException(ProtocolException.MISSING_DATA);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
             }
             if (rsURL == null){
-                throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
+                throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
             }
 
             if (searchQueryRequest.getResourceCredentials() == null){
-                throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
+                throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
             }
             String pathName = "/search";
             String body = json.writeValueAsString(searchQueryRequest);
@@ -85,12 +87,14 @@ public class ResourceWebClient {
             HttpResponse resourcesResponse = retrievePostResponse(composeURL(rsURL, pathName), createAuthorizationHeader(searchQueryRequest.getResourceCredentials()), body);
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
                 logger.error("ResourceRS did not return a 200");
+                // TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
                 throwResponseError(resourcesResponse, rsURL);
             }
             return readObjectFromResponse(resourcesResponse, SearchResults.class);
         } catch (JsonProcessingException e){
             logger.error("Unable to serialize search query");
-            //TODO Write custom exception
+            // TODO Write custom exception
+            // TODO, this looks like a custom exception to me [nbenik]
             throw new ProtocolException("Unable to serialize search query", e);
         }
     }
@@ -99,10 +103,10 @@ public class ResourceWebClient {
         logger.debug("Calling ResourceWebClient query()");
         try {
             if (rsURL == null){
-                throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
+                throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
             }
             if (dataQueryRequest == null){
-                throw new ProtocolException(ProtocolException.MISSING_DATA);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
             }
             if (dataQueryRequest.getResourceCredentials() == null){
                 throw new NotAuthorizedException("Missing credentials");
@@ -112,6 +116,7 @@ public class ResourceWebClient {
             HttpResponse resourcesResponse = retrievePostResponse(composeURL(rsURL, pathName), createAuthorizationHeader(dataQueryRequest.getResourceCredentials()), body);
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
                 logger.error("ResourceRS did not return a 200");
+                // TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
                 throwResponseError(resourcesResponse, rsURL);
             }
             return readObjectFromResponse(resourcesResponse, QueryStatus.class);
@@ -125,13 +130,13 @@ public class ResourceWebClient {
         logger.debug("Calling ResourceWebClient query()");
         try {
             if (queryRequest == null){
-                throw new ProtocolException(ProtocolException.MISSING_DATA);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
             }
             if (queryRequest.getResourceCredentials() == null){
                 throw new NotAuthorizedException("Missing credentials");
             }
             if (rsURL == null){
-                throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
+                throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
             }
             if (queryId == null){
                 throw new ProtocolException("Missing query id");
@@ -143,6 +148,7 @@ public class ResourceWebClient {
             HttpResponse resourcesResponse = retrievePostResponse(composeURL(rsURL, pathName), createAuthorizationHeader(queryRequest.getResourceCredentials()), body);
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
                 logger.error("ResourceRS did not return a 200");
+                // TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
                 throwResponseError(resourcesResponse, rsURL);
             }
             return readObjectFromResponse(resourcesResponse, QueryStatus.class);
@@ -156,24 +162,26 @@ public class ResourceWebClient {
         logger.debug("Calling ResourceWebClient query()");
         try {
             if (queryRequest == null){
-                throw new ProtocolException(ProtocolException.MISSING_DATA);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
             }
             if (queryRequest.getResourceCredentials() == null){
                 throw new NotAuthorizedException("Missing credentials");
             }
             if (rsURL == null){
-                throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
+                throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
             }
             if (queryId == null){
-                throw new ProtocolException(ProtocolException.MISSING_QUERY_ID);
+                throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_QUERY_ID);
             }
             String pathName = "/query/" + queryId + "/result";
             String body = json.writeValueAsString(queryRequest);
             HttpResponse resourcesResponse = retrievePostResponse(composeURL(rsURL, pathName), createAuthorizationHeader(queryRequest.getResourceCredentials()), body);
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
                 logger.error("ResourceRS did not return a 200");
+                // TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
                 throwResponseError(resourcesResponse, rsURL);
             }
+            // TODO: STANDARDIZED RETURN - should we change this? [nbenik]
             return Response.ok(resourcesResponse.getEntity().getContent()).build();
         } catch (JsonProcessingException e){
             logger.error("Unable to encode resource credentials");
@@ -202,6 +210,7 @@ public class ResourceWebClient {
             if (resourcesResponse.getStatusLine().getStatusCode() != 200) {
                 throwError(resourcesResponse, rsURL);
             }
+            // TODO: STANDARDIZED RETURN - should we change this? [nbenik]
             return Response.ok(resourcesResponse.getEntity().getContent()).build();
         } catch (JsonProcessingException e){
             logger.error("Unable to encode resource credentials");
@@ -212,6 +221,7 @@ public class ResourceWebClient {
     }
 
     private void throwError(HttpResponse response, String baseURL){
+        // TODO, this is only used in one place, should/could it be use in other places too? [nbenik]
         logger.error("ResourceRS did not return a 200");
         String errorMessage = baseURL + " " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase();
         try {

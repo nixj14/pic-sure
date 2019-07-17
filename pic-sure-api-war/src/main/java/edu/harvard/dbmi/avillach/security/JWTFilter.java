@@ -8,6 +8,7 @@ import edu.harvard.dbmi.avillach.JAXRSConfiguration;
 import edu.harvard.dbmi.avillach.PicSureWarInit;
 import edu.harvard.dbmi.avillach.data.entity.User;
 import edu.harvard.dbmi.avillach.data.repository.UserRepository;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.response.PICSUREResponse;
 import io.jsonwebtoken.Claims;
@@ -107,16 +108,19 @@ public class JWTFilter implements ContainerRequestFilter {
 
 		} catch (JwtException e) {
 			logger.error("Exception "+ e.getClass().getSimpleName()+": token - " + token + " - is invalid: " + e.getMessage());
+			// TODO: ERROR REFACTOR - Should we throw an error here and have it be handled by the exception mapper subsystem?
 			requestContext.abortWith(PICSUREResponse.unauthorizedError("Token is invalid."));
 		} catch (NotAuthorizedException e) {
 			// the detail of this exception should be logged right before the exception thrown out
 			//			logger.error("User - " + userForLogging + " - is not authorized. " + e.getChallenges());
 			// we should show different response based on role
+			// TODO: ERROR REFACTOR - Should we throw an error here and have it be handled by the exception mapper subsystem?
 			requestContext.abortWith(PICSUREResponse.unauthorizedError("User is not authorized. " + e.getChallenges()));
 		} catch (Exception e){
 			// we should show different response based on role
+			// TODO: ERROR REFACTOR - Should we throw an error here and have it be handled by the exception mapper subsystem?
 			e.printStackTrace();
-			requestContext.abortWith(PICSUREResponse.applicationError("Inner application error, please contact system admin"));
+			requestContext.abortWith(PICSUREResponse.applicationError(PicsureNaming.ExceptionMessages.INTERNAL_SYSTEM_ERROR));
 		}
 	}
 
@@ -210,6 +214,7 @@ public class JWTFilter implements ContainerRequestFilter {
 		try {
 			entity = new StringEntity(json.writeValueAsString(tokenMap));
 		} catch (IOException e) {
+			// TODO: ERROR REFACTOR - Should we throw an error here and have it be handled by the exception mapper subsystem?
 			logger.error("callTokenIntroEndpoint() - " + e.getClass().getSimpleName() + " when composing post");
 			return null;
 		}
@@ -238,6 +243,7 @@ public class JWTFilter implements ContainerRequestFilter {
 		} catch (IOException ex){
 			logger.error("callTokenIntroEndpoint() IOException when hitting url: " + post
 					+ " with exception msg: " + ex.getMessage());
+			// TODO: ERROR REFACTOR - Should we throw an error here and have it be handled by the exception mapper subsystem?
 		} finally {
 			try {
 				if (response != null)
@@ -247,6 +253,7 @@ public class JWTFilter implements ContainerRequestFilter {
 			}
 		}
 
+		// TODO: ERROR REFACTOR - um, if we got to this point and are going to return a null from this call shouldn't we be throwing an exception?
 		return null;
 	}
 

@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.PicsureQueryException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
-import edu.harvard.dbmi.avillach.util.exception.NotAuthorizedException;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -53,6 +53,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 	@GET
 	@Path("/status")
 	public Response status() {
+		// TODO: STANDARDIZED RETURN - should we change this?
 		return Response.ok().build();
 	}
 
@@ -74,7 +75,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 	public QueryStatus query(QueryRequest queryRequest) {
 		logger.debug("Calling Aggregate Query Resource query()");
 		if (queryRequest == null) {
-			throw new ProtocolException(ProtocolException.MISSING_DATA);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
 		}
 		QueryStatus statusResponse = new QueryStatus();
 		statusResponse.setStartTime(new Date().getTime());
@@ -87,7 +88,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 
 				Map<String, String> resourceCredentials = qr.getResourceCredentials();
 				if (resourceCredentials == null) {
-					throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for resource with id: " + qr.getResourceUUID());
+					throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for resource with id: " + qr.getResourceUUID());
 				}
 				try {
 					String queryString = json.writeValueAsString(qr);
@@ -96,6 +97,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 					HttpResponse response = retrievePostResponse(composeURL(TARGET_PICSURE_URL, pathName), headers, queryString);
 					if (response.getStatusLine().getStatusCode() != 200) {
 						logger.error(TARGET_PICSURE_URL + pathName + " calling resource with id " + qr.getResourceUUID() + " did not return a 200: {} {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+						// TODO: ERROR REFACTOR - is this using the standard exception handling?
 						throwResponseError(response, TARGET_PICSURE_URL);
 					}
 					QueryStatus status = readObjectFromResponse(response, QueryStatus.class);
@@ -108,7 +110,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 			}
 		} catch (ClassCastException | IllegalArgumentException e){
 			logger.error(e.getMessage());
-			throw new ProtocolException(ProtocolException.INCORRECTLY_FORMATTED_REQUEST);
+			throw new ProtocolException(PicsureNaming.ExceptionMessages.INCORRECTLY_FORMATTED_REQUEST);
 		}
         statusResponse.setStatus(determineStatus(presentStatuses));
         statusResponse.setResultMetadata(SerializationUtils.serialize(queryIdList));
@@ -122,7 +124,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 		QueryStatus statusResponse = new QueryStatus();
 		statusResponse.setPicsureResultId(UUID.fromString(queryId));
 		if (statusRequest == null || statusRequest.getResourceCredentials() == null) {
-			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
 		}
 
 		String pathName = "/query/" + queryId + "/metadata";
@@ -140,6 +142,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 					response = retrievePostResponse(composeURL(TARGET_PICSURE_URL , pathName), headers, body);
 					if (response.getStatusLine().getStatusCode() != 200) {
 						logger.error(TARGET_PICSURE_URL + pathName + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+						// TODO: ERROR REFACTOR - is this using the standard exception handling?
 						throwResponseError(response, TARGET_PICSURE_URL);
 					}
 					status = readObjectFromResponse(response, QueryStatus.class);
@@ -162,7 +165,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 	public Response queryResult(@PathParam("resourceQueryId") String queryId, QueryRequest resultRequest) {
 		logger.debug("calling Aggregate Query Resource queryResult()");
 		if (resultRequest == null || resultRequest.getResourceCredentials() == null) {
-			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
 		}
 
 		String pathName = "/query/" + queryId + "/metadata";
@@ -180,6 +183,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 					response = retrievePostResponse(composeURL(TARGET_PICSURE_URL, pathName), headers, body);
 					if (response.getStatusLine().getStatusCode() != 200) {
 						logger.error(TARGET_PICSURE_URL + pathName + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+						// TODO: ERROR REFACTOR - is this using the standard exception handling?
 						throwResponseError(response, TARGET_PICSURE_URL);
 					}
 					responses.add(json.readTree(response.getEntity().getContent()));
@@ -188,6 +192,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 					throw new ApplicationException("Unable to encode resource credentials");
 				}
 			}
+			// TODO: STANDARDIZED RETURN - should we change this?
 			return Response.ok(responses).build();
 		} catch (IllegalArgumentException e){
 			throw new ApplicationException("Unable to fetch subqueries");
@@ -210,6 +215,7 @@ public class AggregateQueryResourceRS implements IResourceRS
 		} else if (statuses.contains(PicSureStatus.AVAILABLE)) {
 			return PicSureStatus.AVAILABLE;
 		}
+		// TODO: ERROR REFACTOR - shouldn't we throw an error if execution gets here?
 		return null;
 	}
 }

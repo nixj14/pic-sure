@@ -1,5 +1,6 @@
 package edu.harvard.dbmi.avillach.util.exception;
 
+// TODO: ERROR REFACTOR - Should this class be moved into "pic-sure-util" so it can be handled by an ExceptionMapper? [nbenik]
 public class ResourceCommunicationException extends RuntimeException {
 
 	private static final long serialVersionUID = -3039213913753996987L;

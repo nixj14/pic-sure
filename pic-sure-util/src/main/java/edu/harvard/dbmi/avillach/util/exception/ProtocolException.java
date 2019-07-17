@@ -14,13 +14,6 @@ import javax.ws.rs.core.Response;
  */
 public class ProtocolException extends WebApplicationException {
 
-    public final static String MISSING_RESOURCE_ID = "Missing resource id";
-    public final static String RESOURCE_NOT_FOUND = "No resource with id: ";
-    public final static String MISSING_DATA = "Missing query request data";
-    public final static String MISSING_QUERY_ID = "Missing query id";
-    public final static String QUERY_NOT_FOUND = "No query with id: ";
-    public static final String INCORRECTLY_FORMATTED_REQUEST = "Incorrectly formatted query request data";
-
     @JsonIgnore
     private Response.Status status;
 

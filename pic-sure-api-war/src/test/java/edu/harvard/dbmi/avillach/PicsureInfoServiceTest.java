@@ -6,6 +6,7 @@ import edu.harvard.dbmi.avillach.domain.QueryRequest;
 import edu.harvard.dbmi.avillach.domain.ResourceInfo;
 import edu.harvard.dbmi.avillach.service.PicsureInfoService;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
+import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.junit.Before;
@@ -64,7 +65,7 @@ public class PicsureInfoServiceTest extends BaseServiceTest {
             fail();
         } catch (ProtocolException e){
             assertNotNull(e.getContent());
-            assertTrue("Error message should say '" + ProtocolException.RESOURCE_NOT_FOUND + "'", e.getContent().toString().contains(ProtocolException.RESOURCE_NOT_FOUND));        }
+            assertTrue("Error message should say '" + PicsureNaming.ExceptionMessages.RESOURCE_NOT_FOUND + "'", e.getContent().toString().contains(PicsureNaming.ExceptionMessages.RESOURCE_NOT_FOUND));        }
 
         //Should fail without the url in the resource
         try {
@@ -72,7 +73,7 @@ public class PicsureInfoServiceTest extends BaseServiceTest {
             fail();
         } catch (ApplicationException e){
             assertNotNull(e.getContent());
-            assertEquals("Error message should say '" + ApplicationException.MISSING_RESOURCE_PATH + "'", ApplicationException.MISSING_RESOURCE_PATH, e.getContent().toString());
+            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH + "'", PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent().toString());
         }
         when(mockResource.getResourceRSPath()).thenReturn("resourceRsPath");
 
@@ -82,7 +83,7 @@ public class PicsureInfoServiceTest extends BaseServiceTest {
 //            fail();
 //        } catch (ApplicationException e){
 //            assertNotNull(e.getContent());
-//            assertEquals("Error message should say '" + ApplicationException.MISSING_TARGET_URL + "'", ApplicationException.MISSING_TARGET_URL, e.getContent().toString());
+//            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL + "'", PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent().toString());
 //        }
 
 //        when(mockResource.getTargetURL()).thenReturn("testUrl");

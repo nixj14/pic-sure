@@ -58,7 +58,8 @@ public class UserRepository extends BaseRepository<User, UUID> {
 			logger.debug("findOrCreate() UserId " + userId +
 					" could not be found by `entityManager`, going to create a new user.");
 			user = createUser(inputUser);
-		}catch(NonUniqueResultException e){
+		} catch(NonUniqueResultException e){
+			// TODO: ERROR REFACTOR - Should we let this throw this error and have it be handled by the exception mapper subsystem?
 			logger.error("findOrCreate() " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 		return user;
@@ -68,6 +69,7 @@ public class UserRepository extends BaseRepository<User, UUID> {
 		String subject = inputUser.getSubject(), userId = inputUser.getUserId();
 		if (subject == null && userId == null){
 			logger.error("createUser() cannot create user when both subject and userId are null");
+			// TODO: ERROR REFACTOR - Should we throw an error and have it be handled by the exception mapper subsystem?
 			return null;
 		}
 		logger.debug("createUser() creating user, subject: " + subject +", userId: " + userId + " ......");
