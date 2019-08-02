@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GnomeI2B2ResourceIT extends BaseIT {
 
-    private final static String token ="a.supposedly-Valid.token";
     private final static String i2b2queryString = "{" +
             "    \"select\": [" +
             "        {" +

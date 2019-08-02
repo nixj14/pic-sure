@@ -1,6 +1,8 @@
 package edu.harvard.dbmi.avillach;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -33,6 +35,9 @@ import static org.junit.Assert.*;
 
 public class BaseIT {
 
+	protected static String MOCKITO_BASE_URL;
+	protected static int MOCKITO_PORT;
+
 	private static String CLIENT_SECRET;
 	private static String USER_ID_CLAIM;
 
@@ -42,6 +47,9 @@ public class BaseIT {
 	protected static String hsapiEndpointUrl;
 	protected static UUID resourceId;
 
+	protected final static String A_VALID_TOKEN = "a.valid-token";
+
+
 	//These need to be established here to prevent multiplication of headers
 	protected static String jwt = generateJwtForSystemUser();
 	protected static List<Header> headers = new ArrayList<>(Arrays.asList(new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt), new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json")));
@@ -49,16 +57,22 @@ public class BaseIT {
 	protected static HttpClient client = HttpClientBuilder.create().build();
 	protected final static ObjectMapper objectMapper = new ObjectMapper();
 
-	protected final static int port = 8079;
-	protected final static String testURL = "http://localhost:"+port;
-
 	public BaseIT() {
+		// this runs before @Rule and other jUnit stuff
+
 		// nbenik - use JDNI contexts
 		try {
 			Context ctx = new InitialContext();
-			CLIENT_SECRET = (String) ctx.lookup("global/picsure_client_secret");
-			USER_ID_CLAIM = (String) ctx.lookup("global/picsure_user_id_claim");
-			PICSURE_ENDPOINT_URL = (String) ctx.lookup("global/picsure_url");
+			MOCKITO_BASE_URL = (String) ctx.lookup("java:global/mockito_base_url");
+			try {
+				URL temp_url = new URL(MOCKITO_BASE_URL);
+				MOCKITO_PORT = temp_url.getDefaultPort();
+			} catch (MalformedURLException e) {
+				throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
+			}
+			CLIENT_SECRET = (String) ctx.lookup("java:global/picsure_client_secret");
+			USER_ID_CLAIM = (String) ctx.lookup("java:global/picsure_user_id_claim");
+			PICSURE_ENDPOINT_URL = (String) ctx.lookup("java:global/picsure_url");
 			ctx.close();
 		} catch (NamingException e) {
 			throw new RuntimeException("could not find setting in JDNI");
@@ -66,7 +80,7 @@ public class BaseIT {
 	}
 
 	@Rule
-	public WireMockClassRule wireMockRule = new WireMockClassRule(port);
+	public WireMockClassRule wireMockRule = new WireMockClassRule(MOCKITO_PORT);
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -116,7 +130,7 @@ public class BaseIT {
 				testResource.put("description", "Test Resource");
 				testResource.put("name", "Test Resource");
 				testResource.put("token", "testToken");
-				testResource.put("targetURL", testURL);
+				testResource.put("targetURL", MOCKITO_BASE_URL);
 
 				resourcesToAdd.add(testResource);
 				response = retrievePostResponse(uri, headers, objectMapper.writeValueAsString(resourcesToAdd));

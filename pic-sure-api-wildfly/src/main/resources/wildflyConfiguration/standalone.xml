@@ -418,6 +418,7 @@
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <bindings>
                 <!-- THESE ARE USED BY THE PIC-SURE API WAR -->
+                <simple name="java:global/picsure_url" value="${picsure.cfg.endpoint_url}"/>
                 <simple name="java:global/picsure_client_secret" value="${picsure.cfg.client_secret}"/>
                 <simple name="java:global/picsure_user_id_claim" value="${picsure.cfg.user_id_claim}"/>
                 <simple name="java:global/picsure_roles_claim" value="${picsure.cfg.roles_claim}"/>
@@ -425,11 +426,10 @@
                 <simple name="java:global/picsure_token_introspection_url" value="${picsure.cfg.token_introspection_url}"/>
                 <simple name="java:global/picsure_token_introspection_token" value="${picsure.cfg.token_introspection_token}"/>
                 <!-- THE BELOW SETTINGS ARE USED *ONLY* BY INTEGRATION TESTING!!! -->
-                <simple name="java:global/picsure_url" value="${picsure.cfg.endpoint_url}"/>
-                <simple name="java:global/" value="${.cfg.}"/>
-                <simple name="java:global/" value="${.cfg.}"/>
-                <simple name="java:global/" value="${.cfg.}"/>
-                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/mockito_base_url" value="${mockito.cfg.base_url}"/>
+                <simple name="java:global/irct_token" value="${irct.cfg.token}"/>
+                <simple name="java:global/irct_endpoint_url" value="${irct.cfg.target_url}"/>
+                <simple name="java:global/aggregate_rs_url" value="${aggregate.cfg.rs_url}"/>
                 <simple name="java:global/" value="${.cfg.}"/>
                 <simple name="java:global/" value="${.cfg.}"/>
                 <simple name="java:global/" value="${.cfg.}"/>

@@ -14,6 +14,9 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.*;
 
@@ -28,10 +31,7 @@ import static org.junit.Assert.*;
 //Need tests executed in order to fill in variables for later tests
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AggregateResourceIT extends BaseIT {
-
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final static String token = System.getProperty("irct.token");
     private final static String queryString = "{" +
             "    \"select\": [" +
             "        {" +
@@ -75,9 +75,20 @@ public class AggregateResourceIT extends BaseIT {
     private static UUID aggregateUUID;
     private static String queryId;
     private static String status;
+    private static String IRCT_TOKEN;
 
     @BeforeClass
     public static void setUp() throws IOException{
+
+        // nbenik - use JDNI contexts
+        try {
+            Context ctx = new InitialContext();
+            IRCT_TOKEN = (String) ctx.lookup("global/irct_token");
+            ctx.close();
+        } catch (NamingException e) {
+            throw new RuntimeException("could not find setting in JDNI");
+        }
+
         HttpResponse response = retrieveGetResponse(PICSURE_ENDPOINT_URL + "/info/resources", headers);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         List<JsonNode> responseBody = objectMapper.readValue(response.getEntity().getContent(), new TypeReference<List<JsonNode>>(){});
@@ -110,13 +121,13 @@ public class AggregateResourceIT extends BaseIT {
 
         wireMockRule.stubFor(any(urlPathMatching("/queryService/runQuery"))
                 .withRequestBody(containing("/i2b2-nhanes/Demo"))
-                .withHeader("Authorization", containing(token))
+                .withHeader("Authorization", containing(IRCT_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(resourceResponse))));
 
         wireMockRule.stubFor(any(urlPathMatching("/resultService/resultStatus/.*"))
-                .withHeader("Authorization", containing(token))
+                .withHeader("Authorization", containing(IRCT_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(resourceResponse))));
@@ -166,9 +177,9 @@ public class AggregateResourceIT extends BaseIT {
         errorMessage = responseMessage.get("message").asText();
         assertTrue("Error message should be Unauthorized", errorMessage.contains("Unauthorized"));
 
-        logger.info("Aggregate token is: " + token);
+        logger.info("Aggregate token is: " + IRCT_TOKEN);
         //Should throw an error if missing query string
-        credentials.put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
+        credentials.put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, IRCT_TOKEN);
         queryRequest1.setResourceCredentials(credentials);
         queryRequest1.setQuery(null);
         queryRequest2.setResourceCredentials(credentials);
@@ -229,7 +240,7 @@ public class AggregateResourceIT extends BaseIT {
                         .withStatus(401)));
 
         wireMockRule.stubFor(any(urlPathMatching("/resultService/resultStatus/.*"))
-                .withHeader("Authorization", containing(token))
+                .withHeader("Authorization", containing(IRCT_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(resourceResponse))));
@@ -264,7 +275,7 @@ public class AggregateResourceIT extends BaseIT {
         assertTrue("Error message should be Unauthorized", errorMessage.contains("Unauthorized"));
 
         //This should retrieve the status of the query successfully
-        request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
+        request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, IRCT_TOKEN);
         body = objectMapper.writeValueAsString(request);
 
         response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status", headers, body);
@@ -278,7 +289,7 @@ public class AggregateResourceIT extends BaseIT {
         //TODO What if only one query errors
         //Create an errored response
         wireMockRule.stubFor(any(urlPathMatching("/resultService/resultStatus/.*"))
-                .withHeader("Authorization", containing(token))
+                .withHeader("Authorization", containing(IRCT_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(errorResponse))));
@@ -304,7 +315,7 @@ public class AggregateResourceIT extends BaseIT {
 
 
         wireMockRule.stubFor(any(urlPathMatching("/resultService/result/.*"))
-                .withHeader("Authorization", containing(token))
+                .withHeader("Authorization", containing(IRCT_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(resultResponse))));
@@ -312,7 +323,7 @@ public class AggregateResourceIT extends BaseIT {
         QueryRequest resultRequest = new QueryRequest();
 
         Map<String, String> credentials = new HashMap<String, String>();
-        credentials.put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
+        credentials.put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, IRCT_TOKEN);
 
         QueryRequest request = new QueryRequest();
         request.setResourceCredentials(credentials);
@@ -357,7 +368,7 @@ public class AggregateResourceIT extends BaseIT {
 
         //Should return an array of results
 
-        request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
+        request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, IRCT_TOKEN);
         body = objectMapper.writeValueAsString(request);
 
         response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/result", headers, body);

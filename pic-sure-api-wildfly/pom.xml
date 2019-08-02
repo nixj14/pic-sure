@@ -18,6 +18,8 @@
 		<jboss.home>${project.build.directory}/wildfly-${wildfly.version}</jboss.home>
 
 		<!-- THESE VARIABLES ARE USED ONLY FOR DEVELOPMENT ENVIRONMENT OR INTEGRATION TESTS -->
+		<mockito.cfg.base_url>http://localhost:8079</mockito.cfg.base_url>
+
 		<picsure.cfg.endpoint_url>http://localhost:8080/${project.artifactId}-${project.version}/PICSURE</picsure.cfg.endpoint_url>
 		<picsure.cfg.client_secret>this_value_does_not_matter_for_testing</picsure.cfg.client_secret>
 		<picsure.cfg.user_id_claim>email</picsure.cfg.user_id_claim>
@@ -26,18 +28,12 @@
 		<picsure.cfg.token_introspection_url>http://localhost:8080/${project.artifactId}-${project.version}/PICSURE/token/inspect</picsure.cfg.token_introspection_url>
 		<picsure.cfg.token_introspection_token>this_value_does_not_matter_for_testing</picsure.cfg.token_introspection_token>
 
-
 		<irct.cfg.result_format>JSON</irct.cfg.result_format>				<!-- RESULT_FORMAT -->
-		<irct.cfg.target_url>http://localhost:8079</irct.cfg.target_url> 	<!-- IRCT_TARGET_URL -->
 		<irct.cfg.rs_url>http://localhost:8080/pic-sure-irct-resource-${project.version}/pic-sure/v1.4</irct.cfg.rs_url>	<!-- IRCT_RS_URL -->
 		<irct.cfg.token>eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjg3OTM1NTE5NjI0LCJzdWIiOiJpbnRlZ3JhdGlvbi50ZXN0QGhtcy5oYXJ2YXJkLmVkdSIsImVtYWlsIjoiaW50ZWdyYXRpb24udGVzdEBobXMuaGFydmFyZC5lZHUiLCJpc3MiOiJiYXIiLCJqdGkiOiJGb28iLCJpYXQiOjE1MzU2MDYwMjR9.RUKkN5_Bsd5MWHhV_YTnotoMqTtrOLszsBTN9FC4n48</irct.cfg.token>
 
-		<hsapi.cfg.target_url>http://localhost:8079</hsapi.cfg.target_url>	<!-- HSAPI_TARGET_URL -->
-
-		<gnome.cfg.target_url>http://localhost:8079</gnome.cfg.target_url>	<!-- TARGET_GNOME_URL -->
 		<gnome.cfg.i2b2_rs_url>http://localhost:8080/pic-sure-gnome-i2b2-count-resource-${project.version}/pic-sure/gnome-i2b2-count</gnome.cfg.i2b2_rs_url> <!-- GNOME_I2B2_RS_URL -->
 
-		<i2b2.cfg.target_url>http://localhost:8079</i2b2.cfg.target_url>	<!-- TARGET_I2B2_URL -->
 		<i2b2.cfg.label>Patient Id</i2b2.cfg.label>							<!-- I2B2_LABEL -->
 
 		<aggregate.cfg.rs_url>http://localhost:8080/pic-sure-aggregate-resource-${project.version}/pic-sure/group</aggregate.cfg.rs_url>	<!-- AGGREGATE_RS_URL -->
@@ -624,7 +620,7 @@
 						</goals>
 						<configuration>
 							<!-- All these variables are for integration tests (which is all in wildfly) -->
-							<!--
+							<!-- -->
 							<environmentVariables>
 								<PIC_SURE_CLIENT_SECRET>foo</PIC_SURE_CLIENT_SECRET>
 								<PIC_SURE_USER_ID_CLAIM>email</PIC_SURE_USER_ID_CLAIM>
@@ -636,14 +632,11 @@
 							</environmentVariables>
 							<systemPropertyVariables>
 								<service.url>http://localhost:8080/${project.artifactId}-${project.version}/PICSURE</service.url>
-
-								<irct.service.url>http://localhost:8080/${project.artifactId}-${project.version}/</irct.service.url>
 								<irct.rs.url>http://localhost:8080/pic-sure-irct-resource-${project.version}/</irct.rs.url>
 								<aggregate.rs.url>http://localhost:8080/pic-sure-aggregate-resource-${project.version}/pic-sure/group</aggregate.rs.url>
 								<hsapi.service.url>http://localhost:8080/pic-sure-hsapi-resource-${project.version}/</hsapi.service.url>
-								<irct.token>eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjg3OTM1NTE5NjI0LCJzdWIiOiJpbnRlZ3JhdGlvbi50ZXN0QGhtcy5oYXJ2YXJkLmVkdSIsImVtYWlsIjoiaW50ZWdyYXRpb24udGVzdEBobXMuaGFydmFyZC5lZHUiLCJpc3MiOiJiYXIiLCJqdGkiOiJGb28iLCJpYXQiOjE1MzU2MDYwMjR9.RUKkN5_Bsd5MWHhV_YTnotoMqTtrOLszsBTN9FC4n48</irct.token>
 							</systemPropertyVariables>
-							-->
+							<!-- -->
 						</configuration>
 					</execution>
 					<execution>

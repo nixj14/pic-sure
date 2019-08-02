@@ -16,10 +16,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,13 +37,33 @@ import static org.junit.Assert.*;
 public class ResourceWebClientTest {
 
     private final static ObjectMapper json = new ObjectMapper();
-    private final static String token = "testToken";
-    private final static int port = 8079;
-    private final static String testURL = "http://localhost:"+port;
+    private final static String token = "a.valid-Token";
+
     private final ResourceWebClient cut = new ResourceWebClient();
+    private static String MOCKITO_BASE_URL;
+    private static int MOCKITO_PORT;
+
+    public void ResourceWebClientTest() {
+        // this runs before @Rule and other jUnit stuff
+        // nbenik - use JDNI contexts
+        try {
+            Context ctx = new InitialContext();
+            MOCKITO_BASE_URL = (String) ctx.lookup("java:global/mockito_base_url");
+            try {
+                URL temp_url = new URL(MOCKITO_BASE_URL);
+                MOCKITO_PORT = temp_url.getDefaultPort();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
+            }
+            ctx.close();
+        } catch (NamingException e) {
+            throw new RuntimeException("could not find setting in JDNI");
+        }
+    }
 
     @Rule
-    public WireMockClassRule wireMockRule = new WireMockClassRule(port);
+    public WireMockClassRule wireMockRule = new WireMockClassRule(MOCKITO_PORT);
+
 
     @BeforeClass
     public static void beforeClass() {
@@ -61,7 +86,7 @@ public class ResourceWebClientTest {
         String targetURL = "/info";
         //Should throw an error if any parameters are missing
         try {
-            cut.info(testURL, null);
+            cut.info(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -83,7 +108,7 @@ public class ResourceWebClientTest {
 
 //        queryRequest.setTargetURL(null);
 //        try {
-//            cut.info(testURL, queryRequest);
+//            cut.info(MOCKITO_BASE_URL, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
@@ -91,7 +116,7 @@ public class ResourceWebClientTest {
 
         //Assuming everything goes right
 //        queryRequest.setTargetURL(targetURL);
-        ResourceInfo result = cut.info(testURL, queryRequest);
+        ResourceInfo result = cut.info(MOCKITO_BASE_URL, queryRequest);
         assertNotNull("Result should not be null", result);
 
         //What if the resource has a problem?
@@ -100,7 +125,7 @@ public class ResourceWebClientTest {
                         .withStatus(500)));
 
         try {
-            cut.info(testURL, queryRequest);
+            cut.info(MOCKITO_BASE_URL, queryRequest);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("500 Server Error"));
@@ -114,7 +139,7 @@ public class ResourceWebClientTest {
                         .withBody(incorrectResponse)));
 
         try {
-            cut.info(testURL, queryRequest);
+            cut.info(MOCKITO_BASE_URL, queryRequest);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("Incorrect object type returned"));
@@ -132,7 +157,7 @@ public class ResourceWebClientTest {
 
         //Should throw an error if any parameters are missing
         try {
-            cut.search(testURL, null);
+            cut.search(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -140,7 +165,7 @@ public class ResourceWebClientTest {
 
         QueryRequest request = new QueryRequest();
         try {
-            cut.search(testURL, request);
+            cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -149,7 +174,7 @@ public class ResourceWebClientTest {
         request.setQuery("query");
 
 //        try {
-//            cut.search(testURL, request);
+//            cut.search(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
@@ -169,7 +194,7 @@ public class ResourceWebClientTest {
 //        request.setQuery("query");
 //        request.setTargetURL(targetURL);
 //        try {
-//            cut.search(testURL, request);
+//            cut.search(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (Exception e) {
 //            assertEquals("HTTP 401 Unauthorized", e.getMessage());
@@ -181,7 +206,7 @@ public class ResourceWebClientTest {
         request.setQuery(null);
         request.setResourceCredentials(credentials);
         try {
-            cut.search(testURL, request);
+            cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -194,14 +219,14 @@ public class ResourceWebClientTest {
 //        request.setTargetURL(null);
         request.setQuery("%blood%");
 //        try {
-//            cut.search(testURL, request);
+//            cut.search(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
 //        }
 
 //        request.setTargetURL(targetURL);
-        SearchResults result = cut.search(testURL, request);
+        SearchResults result = cut.search(MOCKITO_BASE_URL, request);
         assertNotNull("Result should not be null", result);
 
         //What if the resource has a problem?
@@ -210,7 +235,7 @@ public class ResourceWebClientTest {
                         .withStatus(500)));
 
         try {
-            cut.search(testURL, request);
+            cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("500 Server Error"));
@@ -226,7 +251,7 @@ public class ResourceWebClientTest {
                         .withBody(json.writeValueAsString(incorrectResponse))));
 
         try {
-            cut.search(testURL, request);
+            cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("Incorrect object type returned"));
@@ -244,7 +269,7 @@ public class ResourceWebClientTest {
 
         //Should fail if any parameters are missing
         try {
-            cut.query(testURL, null);
+            cut.query(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -261,7 +286,7 @@ public class ResourceWebClientTest {
 
         //Should fail if no credentials given
 //        try {
-//            cut.query(testURL, request);
+//            cut.query(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (Exception e) {
 //            assertEquals("HTTP 401 Unauthorized", e.getMessage());
@@ -272,7 +297,7 @@ public class ResourceWebClientTest {
 //        request.setTargetURL(null);
         //Should fail without a targetURL
 //        try {
-//            cut.query(testURL, request);
+//            cut.query(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
@@ -281,7 +306,7 @@ public class ResourceWebClientTest {
 //        request.setTargetURL("/query");
 
         //Everything goes correctly
-        QueryStatus result = cut.query(testURL, request);
+        QueryStatus result = cut.query(MOCKITO_BASE_URL, request);
         assertNotNull("Result should not be null", result);
 
         //What if the resource has a problem?
@@ -290,7 +315,7 @@ public class ResourceWebClientTest {
                         .withStatus(500)));
 
         try {
-            cut.query(testURL, request);
+            cut.query(MOCKITO_BASE_URL, request);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("500 Server Error"));
@@ -306,7 +331,7 @@ public class ResourceWebClientTest {
                         .withBody(json.writeValueAsString(incorrectResponse))));
 
         try {
-            cut.query(testURL, request);
+            cut.query(MOCKITO_BASE_URL, request);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("Incorrect object type returned"));
@@ -327,7 +352,7 @@ public class ResourceWebClientTest {
 
         //Should fail if missing any parameters
 //        try {
-//            cut.queryResult(testURL, testId, null);
+//            cut.queryResult(MOCKITO_BASE_URL, testId, null);
 //            fail();
 //        } catch (ProtocolException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -340,7 +365,7 @@ public class ResourceWebClientTest {
 ////        queryRequest.setTargetURL(targetURL);
 //
 //        try {
-//            cut.queryResult(testURL, null, queryRequest);
+//            cut.queryResult(MOCKITO_BASE_URL, null, queryRequest);
 //            fail();
 //        } catch (ProtocolException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_QUERY_ID, e.getContent());
@@ -355,7 +380,7 @@ public class ResourceWebClientTest {
 ////        queryRequest.setTargetURL(null);
 //        //Should fail without a targetURL
 //        try {
-//            cut.queryResult(testURL, testId, queryRequest);
+//            cut.queryResult(MOCKITO_BASE_URL, testId, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
@@ -365,7 +390,7 @@ public class ResourceWebClientTest {
 
 
         //Everything should work here
-        Response result = cut.queryResult(testURL,testId, queryRequest);
+        Response result = cut.queryResult(MOCKITO_BASE_URL, testId, queryRequest);
         assertNotNull("Result should not be null", result);
         try {
             String resultContent = IOUtils.toString((InputStream) result.getEntity(), "UTF-8");
@@ -380,7 +405,7 @@ public class ResourceWebClientTest {
                         .withStatus(500)));
 
         try {
-            cut.queryResult(testURL, testId, queryRequest);
+            cut.queryResult(MOCKITO_BASE_URL, testId, queryRequest);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("500 Server Error"));
@@ -402,7 +427,7 @@ public class ResourceWebClientTest {
 
         //Fails with any missing parameters
         try {
-            cut.queryStatus(testURL, testId, null);
+            cut.queryStatus(MOCKITO_BASE_URL, testId, null);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
@@ -415,7 +440,7 @@ public class ResourceWebClientTest {
 //        queryRequest.setTargetURL(targetURL);
 
         try {
-            cut.queryStatus(testURL, null, queryRequest);
+            cut.queryStatus(MOCKITO_BASE_URL,null, queryRequest);
             fail();
         } catch (ProtocolException e) {
             assertEquals(PicsureNaming.ExceptionMessages.MISSING_QUERY_ID, e.getContent());
@@ -431,7 +456,7 @@ public class ResourceWebClientTest {
 
         //Should fail without a targetURL
 //        try {
-//            cut.queryStatus(testURL, testId, queryRequest);
+//            cut.queryStatus(MOCKITO_BASE_URL, testId, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
 //            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
@@ -442,7 +467,7 @@ public class ResourceWebClientTest {
 //        queryRequest.setTargetURL(targetURL);
 
         //Everything should work here
-        QueryStatus result = cut.queryStatus(testURL,testId, queryRequest);
+        QueryStatus result = cut.queryStatus(MOCKITO_BASE_URL, testId, queryRequest);
         assertNotNull("Result should not be null", result);
         //Make sure all necessary fields are present
         assertNotNull("Duration should not be null",result.getDuration());
@@ -456,7 +481,7 @@ public class ResourceWebClientTest {
                         .withStatus(500)));
 
         try {
-            cut.queryStatus(testURL, testId, queryRequest);
+            cut.queryStatus(MOCKITO_BASE_URL, testId, queryRequest);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("500 Server Error"));
@@ -472,10 +497,12 @@ public class ResourceWebClientTest {
                         .withBody(json.writeValueAsString(incorrect))));
 
         try {
-            cut.queryStatus(testURL, testId, queryRequest);
+            cut.queryStatus(MOCKITO_BASE_URL, testId, queryRequest);
             fail();
         } catch (Exception e) {
             assertTrue( e.getMessage().contains("Incorrect object type returned"));
         }
     }
 }
+
+

@@ -35,13 +35,12 @@ public class ResourceTestInitializer
             PICSURE_URL = (String) ctx.lookup("java:global/picsure_url");
             IRCT_URL = (String) ctx.lookup("java:global/");
             IRCT_RS_URL = (String) ctx.lookup("java:global/");
-            AGGREGATE_RS_URL = (String) ctx.lookup("java:global/");
+            AGGREGATE_RS_URL = (String) ctx.lookup("java:global/aggregate_rs_url");
             GNOME_I2B2_RS_URL = (String) ctx.lookup("java:global/");
             ctx.close();
         } catch (NamingException e) {
             throw new RuntimeException("Could not find JNDI name(s)!");
         }
-
         insertTestResources();
     }
 
