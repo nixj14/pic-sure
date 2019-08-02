@@ -428,12 +428,14 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <bindings>
-                <simple name="java:global/client_secret" value="${env.PICSURE2_CLIENT_SECRET}"/>
-                <simple name="java:global/user_id_claim" value="${env.PICSURE2_USER_ID_CLAIM}"/>
-                <simple name="java:global/roles_claim" value="${env.PICSURE2_ROLES_CLAIM:privileges}"/>
-                <simple name="java:global/verify_user_method" value="${env.VERIFY_USER_METHOD}"/>
-                <simple name="java:global/token_introspection_url" value="${env.TOKEN_INTROSPECTION_URL}"/>
-                <simple name="java:global/token_introspection_token" value="${env.TOKEN_INTROSPECTION_TOKEN}"/>
+                <!-- THESE ARE USED BY THE PIC-SURE API WAR -->
+                <simple name="java:global/picsure_client_secret" value="${picsure.cfg.client_secret}"/>
+                <simple name="java:global/picsure_user_id_claim" value="${picsure.cfg.user_id_claim}"/>
+                <simple name="java:global/picsure_roles_claim" value="${picsure.cfg.roles_claim:privileges}"/>
+                <simple name="java:global/picsure_verify_user_method" value="${picsure.cfg.verify_user_method}"/>
+                <simple name="java:global/picsure_token_introspection_url" value="${picsure.cfg.token_introspection_url}"/>
+                <simple name="java:global/picsure_token_introspection_token" value="${picsure.cfg.token_introspection_token}"/>
+                <!-- *NO* INTEGRATION TESTING VARIABLES SHOULD BE USED HERE!!! -->
             </bindings>
             <remote-naming/>
         </subsystem>

@@ -15,7 +15,7 @@ public class ResourceIT extends BaseIT{
 	public void testListResources() throws Exception {
 
 		String jwt = generateJwtForSystemUser();
-		HttpGet get = new HttpGet(endpointUrl + "/info/resources");
+		HttpGet get = new HttpGet(PICSURE_ENDPOINT_URL + "/info/resources");
 		get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+ jwt);
 		org.apache.http.HttpResponse response = client.execute(get);
 		assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());

@@ -11,6 +11,7 @@
 	<packaging>war</packaging>
 	<name>PIC-SURE API war</name>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--<argLine>&#45;&#45;add-modules jdk.incubator.httpclient</argLine>-->
 	</properties>
 	<dependencies>

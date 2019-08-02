@@ -8,15 +8,16 @@
 	<packaging>pom</packaging>
 	<name>pic-sure-api</name>
 	<modules>
-		<module>pic-sure-api-war</module>
-		<module>pic-sure-api-data</module>
-		<module>pic-sure-resources</module>
-		<module>pic-sure-api-wildfly</module>
-		<module>pic-sure-util</module>
+		<module>pic-sure-api-war</module>		<!-- the PIC-SURE API itself -->
+		<module>pic-sure-api-data</module>		<!-- database related info -->
+		<module>pic-sure-resources</module>		<!-- a directory full of PIC-SURE Resource to be accessed via the API -->
+		<module>pic-sure-api-wildfly</module>	<!-- fully configured environment for integration testing and development -->
+		<module>pic-sure-util</module>			<!-- utility classes/functions for use by API and Resources -->
 	</modules>
 	<properties>
 		<jackson.version>2.9.4</jackson.version>
 		<picsure.2.token>eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmb29AYmFyLmNvbSIsImlzcyI6ImJhciIsImV4cCI6ODY1NTI4Mzk4NTQzLCJpYXQiOjE1Mjg0ODQ5NDMsImp0aSI6IkZvbyIsImVtYWlsIjoiZm9vQGJhci5jb20ifQ.KE2NIfCzQnd_vhykhb0sHdPHEwvy2Wphc4UVsKAVTgM</picsure.2.token>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<pluginManagement>
@@ -96,62 +97,6 @@
 				<artifactId>jaxb-impl</artifactId>
 				<version>2.3.0</version>
 			</dependency>
-            <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
-            <dependency>
-				<groupId>org.hibernate.javax.persistence</groupId>
-				<artifactId>hibernate-jpa-2.1-api</artifactId>
-				<version>1.0.2.Final</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-annotations</artifactId>
-				<version>3.5.6-Final</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>org.hibernate.javax.persistence</groupId>
-						<artifactId>hibernate-jpa-2.0-api</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-				<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.25</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>3.7</version>
-				<scope>compile</scope>
-			</dependency>
-
-
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.7.25</version>
-				<scope>test</scope>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-core</artifactId>
-				<version>3.5.6-Final</version>
-				<scope>provided</scope>
-			</dependency>
-
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
@@ -195,6 +140,56 @@
 				<artifactId>mockito-core</artifactId>
 				<version>2.23.4</version>
 				<scope>test</scope>
+			</dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+            <dependency>
+				<groupId>org.hibernate.javax.persistence</groupId>
+				<artifactId>hibernate-jpa-2.1-api</artifactId>
+				<version>1.0.2.Final</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-annotations</artifactId>
+				<version>3.5.6-Final</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.hibernate.javax.persistence</groupId>
+						<artifactId>hibernate-jpa-2.0-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+				<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.25</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.25</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>3.5.6-Final</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 

@@ -31,7 +31,7 @@ public class PicsureSearchServiceIT extends BaseIT{
                         .withBody(objectMapper.writeValueAsString(anyOldResult))));
 
 
-        String uri = composeURL(endpointUrl, "/search/"+resourceId);
+        String uri = composeURL(PICSURE_ENDPOINT_URL, "/search/"+resourceId);
         HttpResponse response = retrievePostResponse(uri, headers, "");
         assertEquals("Missing query request info should return 500", 500, response.getStatusLine().getStatusCode());
         EntityUtils.consume(response.getEntity());

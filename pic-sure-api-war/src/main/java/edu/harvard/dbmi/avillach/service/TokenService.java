@@ -1,5 +1,6 @@
 package edu.harvard.dbmi.avillach.service;
 
+import edu.harvard.dbmi.avillach.PicSureWarInit;
 import edu.harvard.dbmi.avillach.data.entity.User;
 import edu.harvard.dbmi.avillach.data.repository.UserRepository;
 import edu.harvard.dbmi.avillach.util.PicsureNaming;
@@ -28,9 +29,6 @@ import java.util.stream.Collectors;
 public class TokenService {
 
     Logger logger = LoggerFactory.getLogger(TokenService.class);
-
-    @Resource(mappedName = "java:global/client_secret")
-    private String clientSecret;
 
     @Inject
     UserRepository userRepo;
@@ -68,10 +66,10 @@ public class TokenService {
         Jws<Claims> jws = null;
 
         try {
-            jws = Jwts.parser().setSigningKey(clientSecret.getBytes()).parseClaimsJws(token);
+            jws = Jwts.parser().setSigningKey(PicSureWarInit.CLIENT_SECRET.getBytes()).parseClaimsJws(token);
         } catch (SignatureException e) {
             try {
-                jws = Jwts.parser().setSigningKey(Base64.decodeBase64(clientSecret
+                jws = Jwts.parser().setSigningKey(Base64.decodeBase64(PicSureWarInit.CLIENT_SECRET
                         .getBytes("UTF-8")))
                         .parseClaimsJws(token);
             } catch (UnsupportedEncodingException ex){

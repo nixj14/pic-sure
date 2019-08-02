@@ -28,7 +28,7 @@ public class PicsureInfoServiceIT extends BaseIT {
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(qfs))));
 
-        String uri = composeURL(endpointUrl, "/info/" + resourceId);
+        String uri = composeURL(PICSURE_ENDPOINT_URL, "/info/" + resourceId);
 
 
         HttpResponse response = retrievePostResponse(uri, headers, "");
@@ -49,7 +49,7 @@ public class PicsureInfoServiceIT extends BaseIT {
         assertNotNull("Resource response should have a name", responseInfo.getName());
 
         //Try with a non-existent id
-        uri = composeURL(endpointUrl , "/info/3b2437fe-df56-4360-8156-27bcf0b1a467");
+        uri = composeURL(PICSURE_ENDPOINT_URL, "/info/3b2437fe-df56-4360-8156-27bcf0b1a467");
         response = retrievePostResponse(uri, headers, body);
         assertEquals("Incorrect resource Id should return 500", 500, response.getStatusLine().getStatusCode());
     }

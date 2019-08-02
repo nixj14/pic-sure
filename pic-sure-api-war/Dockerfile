@@ -10,7 +10,8 @@ ENV PICSURE2_MYSQLPASS password
 
 # JWT Token
 ENV CLIENT_ID dummyid
-ENV CLIENT_SECRET dummysecret
+# vvv------- no longer valid (nbenik 7/23/19)
+# ENV CLIENT_SECRET dummysecret
 ENV picsure_USER_FIELD sub
 
 # copy modules

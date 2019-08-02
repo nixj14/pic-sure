@@ -18,7 +18,7 @@ public class SystemServiceIT extends BaseIT {
 	public void testStatusIsAccessibleToSystemUser() throws Exception {
 		try {
 			String jwt = generateJwtForSystemUser();
-			HttpGet get = new HttpGet(endpointUrl + "/system/status");
+			HttpGet get = new HttpGet(PICSURE_ENDPOINT_URL + "/system/status");
 			get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+ jwt);
 			HttpResponse response = client.execute(get);
 			assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
@@ -35,7 +35,7 @@ public class SystemServiceIT extends BaseIT {
 		try{
 			String jwt = generateJwtForNonSystemUser();
 
-			HttpGet get = new HttpGet(endpointUrl + "/system/status");
+			HttpGet get = new HttpGet(PICSURE_ENDPOINT_URL + "/system/status");
 			get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+ jwt);
 			HttpResponse response = client.execute(get);
 			assertEquals("Request should be rejected with 401", 401, response.getStatusLine().getStatusCode());

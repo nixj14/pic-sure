@@ -149,6 +149,7 @@
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:5.0">
             <datasources>
+                <!-- TODO: Delete this data source if it is not being used -->
                 <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
                     <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
                     <driver>h2</driver>
@@ -416,12 +417,25 @@
         <subsystem xmlns="urn:wildfly:microprofile-opentracing-smallrye:1.0"/>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <bindings>
-                <simple name="java:global/test_target_url" value="${env.IRCT_TARGET_URL}"/>
-                <simple name="java:global/client_secret" value="${env.PIC_SURE_CLIENT_SECRET}"/>
-                <simple name="java:global/user_id_claim" value="${env.PIC_SURE_USER_ID_CLAIM}"/>
-                <simple name="java:global/verify_user_method" value="${env.VERIFY_USER_METHOD}"/>
-                <simple name="java:global/token_introspection_url" value="${env.TOKEN_INTROSPECTION_URL}"/>
-                <simple name="java:global/token_introspection_token" value="${env.TOKEN_INTROSPECTION_TOKEN}"/>
+                <!-- THESE ARE USED BY THE PIC-SURE API WAR -->
+                <simple name="java:global/picsure_client_secret" value="${picsure.cfg.client_secret}"/>
+                <simple name="java:global/picsure_user_id_claim" value="${picsure.cfg.user_id_claim}"/>
+                <simple name="java:global/picsure_roles_claim" value="${picsure.cfg.roles_claim}"/>
+                <simple name="java:global/picsure_verify_user_method" value="${picsure.cfg.verify_user_method}"/>
+                <simple name="java:global/picsure_token_introspection_url" value="${picsure.cfg.token_introspection_url}"/>
+                <simple name="java:global/picsure_token_introspection_token" value="${picsure.cfg.token_introspection_token}"/>
+                <!-- THE BELOW SETTINGS ARE USED *ONLY* BY INTEGRATION TESTING!!! -->
+                <simple name="java:global/picsure_url" value="${picsure.cfg.endpoint_url}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+                <simple name="java:global/" value="${.cfg.}"/>
+
             </bindings>
             <remote-naming/>
         </subsystem>

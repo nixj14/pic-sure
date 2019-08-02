@@ -54,11 +54,6 @@ public class JWTFilter implements ContainerRequestFilter {
 	@Context
 	ResourceInfo resourceInfo;
 
-	@Resource(mappedName = "java:global/client_secret")
-	private String clientSecret;
-	@Resource(mappedName = "java:global/user_id_claim")
-	private String userIdClaim;
-
 	@Inject
 	PicSureWarInit picSureWarInit;
 
@@ -81,7 +76,7 @@ public class JWTFilter implements ContainerRequestFilter {
 			User authenticatedUser = null;
 
 			if (PicSureWarInit.VERIFY_METHOD_TOKEN_INTRO.equalsIgnoreCase(picSureWarInit.getVerify_user_method())) {
-				authenticatedUser = callTokenIntroEndpoint(requestContext, token, userIdClaim);
+				authenticatedUser = callTokenIntroEndpoint(requestContext, token, PicSureWarInit.USERID_CLAIM);
 			} else {
 				authenticatedUser = callLocalAuthentication(requestContext, token);
 			}
@@ -258,10 +253,10 @@ public class JWTFilter implements ContainerRequestFilter {
 	}
 
 	private User callLocalAuthentication(ContainerRequestContext requestContext, String token) throws JwtException{
-		Jws<Claims> jws = Jwts.parser().setSigningKey(clientSecret.getBytes()).parseClaimsJws(token);
+		Jws<Claims> jws = Jwts.parser().setSigningKey(PicSureWarInit.CLIENT_SECRET.getBytes()).parseClaimsJws(token);
 
 		String subject = jws.getBody().getSubject();
-		String userId = jws.getBody().get(userIdClaim, String.class);
+		String userId = jws.getBody().get(PicSureWarInit.USERID_CLAIM, String.class);
 
 		return userRepo.findOrCreate(new User().setSubject(subject).setUserId(userId));
 	}

@@ -78,7 +78,7 @@ public class AggregateResourceIT extends BaseIT {
 
     @BeforeClass
     public static void setUp() throws IOException{
-        HttpResponse response = retrieveGetResponse(endpointUrl+"/info/resources", headers);
+        HttpResponse response = retrieveGetResponse(PICSURE_ENDPOINT_URL + "/info/resources", headers);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         List<JsonNode> responseBody = objectMapper.readValue(response.getEntity().getContent(), new TypeReference<List<JsonNode>>(){});
         assertFalse(responseBody.isEmpty());
@@ -143,8 +143,8 @@ public class AggregateResourceIT extends BaseIT {
         String body = objectMapper.writeValueAsString(topQuery);
 
         //Should throw an error if credentials missing or wrong
-        System.out.println("401 URL: " + endpointUrl+"/query" + "|headers: " + headers + "|body: " + body);
-        HttpResponse response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        System.out.println("401 URL: " + PICSURE_ENDPOINT_URL + "/query" + "|headers: " + headers + "|body: " + body);
+        HttpResponse response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
 //        System.out.println("Test Response: " + IOUtils.toString(response.getEntity().getContent(), "UTF-8"));
         assertEquals("Missing credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         JsonNode responseMessage = objectMapper.readTree(response.getEntity().getContent());
@@ -157,7 +157,7 @@ public class AggregateResourceIT extends BaseIT {
         credentials.put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, "anInvalidToken");
         queryRequest2.setResourceCredentials(credentials);
         body = objectMapper.writeValueAsString(topQuery);
-        response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
         assertEquals("Invalid credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -174,7 +174,7 @@ public class AggregateResourceIT extends BaseIT {
         queryRequest2.setResourceCredentials(credentials);
         topQuery.setResourceCredentials(credentials);
         body = objectMapper.writeValueAsString(topQuery);
-        response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
         assertEquals("Missing query should return a 500", 500, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -182,7 +182,7 @@ public class AggregateResourceIT extends BaseIT {
         //Try a poorly worded queryString
         queryRequest1.setQuery("poorly worded query");
         body = objectMapper.writeValueAsString(topQuery);
-        response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
         assertEquals("Incorrectly formatted query should return a 500", 500, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -191,12 +191,12 @@ public class AggregateResourceIT extends BaseIT {
         queryRequest1.setQuery(queryString);
         body = objectMapper.writeValueAsString(topQuery);
 
-        response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
         assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
         assertNotNull("Status should not be null", responseMessage.get("status"));
-        System.out.println("Aggregate response message from " + endpointUrl+"/query is: " + responseMessage.toString());
+        System.out.println("Aggregate response message from " + PICSURE_ENDPOINT_URL + "/query is: " + responseMessage.toString());
         queryId = responseMessage.get("picsureResultId").asText();
         System.out.println("Aggregate Resource IT, queryResultId is: " + queryId);
         assertNotNull("picsureResultId should not be null", queryId);
@@ -204,7 +204,7 @@ public class AggregateResourceIT extends BaseIT {
         //Want the status to be ERROR if one query errors - send query to be tested by queryStatus
         queryRequest2.setQuery(errorQuery);
         body = objectMapper.writeValueAsString(topQuery);
-        response = retrievePostResponse(endpointUrl+"/query", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query", headers, body);
         assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -240,8 +240,8 @@ public class AggregateResourceIT extends BaseIT {
         String body = objectMapper.writeValueAsString(request);
 
         //Should get 401 for missing or invalid credentials
-        System.out.println("401 URL: "+endpointUrl+"/query/" + queryId + "/status");
-        HttpResponse response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/status", headers, body);
+        System.out.println("401 URL: " + PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status");
+        HttpResponse response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status", headers, body);
         assertEquals("Missing credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         JsonNode responseMessage = objectMapper.readTree(response.getEntity().getContent());
         System.out.println(("AggregateResourceIT - test missing or invalid credentials returns: " + responseMessage));
@@ -254,7 +254,7 @@ public class AggregateResourceIT extends BaseIT {
         request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, "anInvalidToken");
         body = objectMapper.writeValueAsString(request);
 
-        response = retrievePostResponse(composeURL(endpointUrl,"/query/" + queryId + "/status"), headers, body);
+        response = retrievePostResponse(composeURL(PICSURE_ENDPOINT_URL,"/query/" + queryId + "/status"), headers, body);
         assertEquals("Invalid credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -267,7 +267,7 @@ public class AggregateResourceIT extends BaseIT {
         request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
         body = objectMapper.writeValueAsString(request);
 
-        response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/status", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status", headers, body);
         assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -283,7 +283,7 @@ public class AggregateResourceIT extends BaseIT {
                         .withStatus(200)
                         .withBody(objectMapper.writeValueAsString(errorResponse))));
 
-        response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/status", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status", headers, body);
         assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -321,7 +321,7 @@ public class AggregateResourceIT extends BaseIT {
         //Need to make sure result is ready
         while (!status.equals(PicSureStatus.AVAILABLE.name()) && !status.equals(PicSureStatus.ERROR.name())){
             Thread.sleep(2000);
-            HttpResponse response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/status", headers, body);
+            HttpResponse response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/status", headers, body);
             assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
             JsonNode responseMessage = objectMapper.readTree(response.getEntity().getContent());
             assertNotNull("Response message should not be null", responseMessage);
@@ -334,7 +334,7 @@ public class AggregateResourceIT extends BaseIT {
         body = objectMapper.writeValueAsString(request);
 
         //Missing or invalid credentials should return 401
-        HttpResponse response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/result", headers, body);
+        HttpResponse response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/result", headers, body);
         assertEquals("Missing credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         JsonNode responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -346,7 +346,7 @@ public class AggregateResourceIT extends BaseIT {
         request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, "anInvalidToken");
         body = objectMapper.writeValueAsString(request);
 
-        response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/result", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/result", headers, body);
         assertEquals("Missing credentials should return a 401", 401, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);
@@ -360,7 +360,7 @@ public class AggregateResourceIT extends BaseIT {
         request.getResourceCredentials().put(IRCTResourceRS.IRCT_BEARER_TOKEN_KEY, token);
         body = objectMapper.writeValueAsString(request);
 
-        response = retrievePostResponse(endpointUrl+"/query/" + queryId + "/result", headers, body);
+        response = retrievePostResponse(PICSURE_ENDPOINT_URL + "/query/" + queryId + "/result", headers, body);
         assertEquals("Should return a 200", 200, response.getStatusLine().getStatusCode());
         responseMessage = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response message should not be null", responseMessage);

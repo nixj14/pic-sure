@@ -21,6 +21,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.http.client.HttpClient;
 import org.junit.Rule;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.core.HttpHeaders;
 
 import static edu.harvard.dbmi.avillach.util.HttpClientUtil.composeURL;
@@ -30,10 +33,10 @@ import static org.junit.Assert.*;
 
 public class BaseIT {
 
-	private static final String CLIENT_SECRET = System.getenv("PIC_SURE_CLIENT_SECRET");
-	private static final String USER_ID_CLAIM = System.getenv("PIC_SURE_USER_ID_CLAIM");
+	private static String CLIENT_SECRET;
+	private static String USER_ID_CLAIM;
 
-	protected static String endpointUrl;
+	protected static String PICSURE_ENDPOINT_URL; // endpointUrl
 	protected static String irctEndpointUrl;
 	protected static String aggregate_url;
 	protected static String hsapiEndpointUrl;
@@ -49,21 +52,44 @@ public class BaseIT {
 	protected final static int port = 8079;
 	protected final static String testURL = "http://localhost:"+port;
 
+	public BaseIT() {
+		// nbenik - use JDNI contexts
+		try {
+			Context ctx = new InitialContext();
+			CLIENT_SECRET = (String) ctx.lookup("global/picsure_client_secret");
+			USER_ID_CLAIM = (String) ctx.lookup("global/picsure_user_id_claim");
+			PICSURE_ENDPOINT_URL = (String) ctx.lookup("global/picsure_url");
+			ctx.close();
+		} catch (NamingException e) {
+			throw new RuntimeException("could not find setting in JDNI");
+		}
+	}
+
 	@Rule
 	public WireMockClassRule wireMockRule = new WireMockClassRule(port);
 
 	@BeforeClass
 	public static void beforeClass() {
-		endpointUrl = System.getProperty("service.url");
-		System.out.println("endpointUrl is: " + endpointUrl);
-		irctEndpointUrl = System.getProperty("irct.rs.url");
+/*
+		PICSURE_ENDPOINT_URL = (String) ctx.lookup("global/");
+		PICSURE_ENDPOINT_URL = System.getProperty("service.url"); // WHUT?
+
+		aggregate_url = (String) ctx.lookup("global/");
+		aggregate_url = System.getProperty("aggregate.cfg.rs_url"); // WHUT?
+
+		hsapiEndpointUrl = (String) ctx.lookup("global/");
+		hsapiEndpointUrl = System.getProperty("hsapi.cfg.service_url"); // WHUT?
+
+		irctEndpointUrl = (String) ctx.lookup("global/");
+		irctEndpointUrl = System.getProperty("irct.cfg.rs_url"); // WHUT?
+
+ */
+		System.out.println("PICSURE_ENDPOINT_URL is: " + PICSURE_ENDPOINT_URL);
 		System.out.println("irctEndpointUrl is: " + irctEndpointUrl);
-		aggregate_url = System.getProperty("aggregate.rs.url");
-		hsapiEndpointUrl = System.getProperty("hsapi.service.url");
 
 		//insert a resource for testing if necessary
 		try {
-			String uri = composeURL(endpointUrl, "/resource");
+			String uri = composeURL(PICSURE_ENDPOINT_URL, "/resource");
 			HttpResponse response = retrieveGetResponse(uri, headers);
 			assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
 			List<Resource> resources = objectMapper.readValue(response.getEntity().getContent(), new TypeReference<List<Resource>>() {

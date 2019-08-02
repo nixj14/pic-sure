@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Startup;
+import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -18,26 +19,12 @@ public class JAXRSConfiguration extends Application {
 
     private Logger logger = LoggerFactory.getLogger(JAXRSConfiguration.class);
 
+
     public static String rolesClaim;
 
     @PostConstruct
     public void init() {
         logger.info("Starting pic-sure core app.");
-
-        logger.info("Initializing roles claim.");
-        initializeRolesClaim();
-        logger.info("Finished initializing roles claim.");
-
-    }
-
-    private void initializeRolesClaim(){
-        try{
-            Context ctx = new InitialContext();
-            rolesClaim = (String) ctx.lookup("global/roles_claim");
-            ctx.close();
-        } catch (NamingException e) {
-            rolesClaim = "privileges";
-        }
     }
 
     public JAXRSConfiguration(){

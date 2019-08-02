@@ -28,7 +28,7 @@ public class TokenServiceIT extends BaseIT {
         Map<String,String> tokenMap = new HashMap<>();
         tokenMap.put("token", jwt);
         String tokenString = objectMapper.writeValueAsString(tokenMap);
-        HttpResponse response = HttpClientUtil.retrievePostResponse(endpointUrl + "/token/inspect", headers, tokenString);
+        HttpResponse response = HttpClientUtil.retrievePostResponse(PICSURE_ENDPOINT_URL + "/token/inspect", headers, tokenString);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         JsonNode responseNode = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response entity should not be null", responseNode);
@@ -41,7 +41,7 @@ public class TokenServiceIT extends BaseIT {
         String jwt2 = generateJwtForNonSystemUser();
         tokenMap.put("token", jwt2);
         tokenString = objectMapper.writeValueAsString(tokenMap);
-        response = HttpClientUtil.retrievePostResponse(endpointUrl + "/token/inspect", headers, tokenString);
+        response = HttpClientUtil.retrievePostResponse(PICSURE_ENDPOINT_URL + "/token/inspect", headers, tokenString);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         responseNode = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response entity should not be null", responseNode);
@@ -50,7 +50,7 @@ public class TokenServiceIT extends BaseIT {
         //Missing token
         tokenMap = new HashMap<>();
         tokenString = objectMapper.writeValueAsString(tokenMap);
-        response = HttpClientUtil.retrievePostResponse(endpointUrl + "/token/inspect", headers, tokenString);
+        response = HttpClientUtil.retrievePostResponse(PICSURE_ENDPOINT_URL + "/token/inspect", headers, tokenString);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         responseNode = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response entity should not be null", responseNode);
@@ -60,7 +60,7 @@ public class TokenServiceIT extends BaseIT {
         String jwt3 = generateExpiredJwt();
         tokenMap.put("token", jwt3);
         tokenString = objectMapper.writeValueAsString(tokenMap);
-        response = HttpClientUtil.retrievePostResponse(endpointUrl + "/token/inspect", headers, tokenString);
+        response = HttpClientUtil.retrievePostResponse(PICSURE_ENDPOINT_URL + "/token/inspect", headers, tokenString);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         responseNode = objectMapper.readTree(response.getEntity().getContent());
         assertNotNull("Response entity should not be null", responseNode);

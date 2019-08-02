@@ -42,14 +42,13 @@ import static edu.harvard.dbmi.avillach.util.HttpClientUtil.*;
 @Consumes("application/json")
 public class IRCTResourceRS implements IResourceRS
 {
-	private static String RESULT_FORMAT = System.getenv("RESULT_FORMAT");
+	public static String CONTEXT_NAME;
+	public static String RESULT_FORMAT;
 	private static final String DEFAULT_RESULT_FORMAT = "JSON";
-
 	public static final String IRCT_BEARER_TOKEN_KEY = "IRCT_BEARER_TOKEN";
-
 	public static final String MISSING_CREDENTIALS_MESSAGE = "Missing credentials";
-
 	private static String targetURL;
+
 
 	@Context
 	private ServletContext context;
@@ -67,12 +66,24 @@ public class IRCTResourceRS implements IResourceRS
 
 	@PostConstruct
 	public void init() {
+		CONTEXT_NAME = context.getContextPath().replaceAll("/","");
 		try {
 			InitialContext ctx = new InitialContext();
-			targetURL = (String) ctx.lookup("java:global/target_url_" + context.getContextPath().replaceAll("/",""));
+			targetURL = (String) ctx.lookup("java:global/" + CONTEXT_NAME + "_target_url_" + context.getContextPath().replaceAll("/",""));
 		} catch (NamingException e) {
-			throw new RuntimeException("Could not find JNDI name : "  + "java:global/target_url_" + context.getContextPath().replaceAll("/","") + " --- please put your irct target url here");
+			throw new RuntimeException("Could not find JNDI name : "  + "java:global/" + CONTEXT_NAME + "_target_url --- please put your irct target url here");
 		}
+
+		// get rest of the settings
+		try {
+			InitialContext ctx = new InitialContext();
+			RESULT_FORMAT = (String) ctx.lookup("java:global/" + CONTEXT_NAME + "_RESULTS_FORMAT");
+			ctx.close();
+		} catch (NamingException e) {
+			throw new RuntimeException("could not find setting in JDNI");
+		}
+
+
 	}
 
 	@GET
