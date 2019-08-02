@@ -19,7 +19,6 @@ public class JAXRSConfiguration extends Application {
 
     private Logger logger = LoggerFactory.getLogger(JAXRSConfiguration.class);
 
-
     public static String rolesClaim;
 
     @PostConstruct

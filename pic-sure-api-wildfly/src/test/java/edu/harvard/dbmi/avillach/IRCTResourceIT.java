@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.harvard.dbmi.avillach.domain.QueryFormat;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
 import edu.harvard.dbmi.avillach.domain.QueryStatus;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.hms.dbmi.avillach.IRCTResourceRS;
 import org.apache.commons.io.IOUtils;
@@ -110,7 +109,7 @@ public class IRCTResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertTrue("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage.contains(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL));
+//		assertTrue("Error message should be " + ApplicationException.MISSING_TARGET_URL, errorMessage.contains(ApplicationException.MISSING_TARGET_URL));
 
 
 		//This should work
@@ -191,7 +190,7 @@ public class IRCTResourceIT extends BaseIT {
 		errorType = responseMessage.get("errorType").asText();
 		assertEquals("Error type should be error", "error", errorType);
 		errorMessage = responseMessage.get("message").asText();
-		assertEquals("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_DATA, PicsureNaming.ExceptionMessages.MISSING_DATA, errorMessage);
+		assertEquals("Error message should be " + ProtocolException.MISSING_DATA, ProtocolException.MISSING_DATA, errorMessage);
 
 
 		queryRequest.setQuery("%antibody%");
@@ -201,7 +200,7 @@ public class IRCTResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertEquals("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage);
+//		assertEquals("Error message should be " + ApplicationException.MISSING_TARGET_URL, ApplicationException.MISSING_TARGET_URL, errorMessage);
 
 		//This should work
 		body = objectMapper.writeValueAsString(queryRequest);
@@ -293,7 +292,7 @@ public class IRCTResourceIT extends BaseIT {
 		errorType = responseMessage.get("errorType").asText();
 		assertEquals("Error type should be error", "error", errorType);
 		errorMessage = responseMessage.get("message").asText();
-		assertTrue("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_DATA, errorMessage.contains(PicsureNaming.ExceptionMessages.MISSING_DATA));
+		assertTrue("Error message should be " + ProtocolException.MISSING_DATA, errorMessage.contains(ProtocolException.MISSING_DATA));
 
 		//Try a poorly worded queryString
 		queryRequest.setQuery("poorlyWordedQueryString");
@@ -315,7 +314,7 @@ public class IRCTResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertEquals("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage);
+//		assertEquals("Error message should be " + ApplicationException.MISSING_TARGET_URL, ApplicationException.MISSING_TARGET_URL, errorMessage);
 
 		JsonNode jsonNode = objectMapper.readTree(queryString);
 
@@ -403,7 +402,7 @@ public class IRCTResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertEquals("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage);
+//		assertEquals("Error message should be " + ApplicationException.MISSING_TARGET_URL, ApplicationException.MISSING_TARGET_URL, errorMessage);
 
         //This should work
 		body = objectMapper.writeValueAsString(queryRequest);
@@ -471,7 +470,7 @@ public class IRCTResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertEquals("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage);
+//		assertEquals("Error message should be " + ApplicationException.MISSING_TARGET_URL, ApplicationException.MISSING_TARGET_URL, errorMessage);
 
 		//This should work
 		body = objectMapper.writeValueAsString(request);

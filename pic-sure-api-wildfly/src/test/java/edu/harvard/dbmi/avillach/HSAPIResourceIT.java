@@ -3,7 +3,6 @@ package edu.harvard.dbmi.avillach;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.apache.commons.io.IOUtils;
@@ -122,7 +121,7 @@ public class HSAPIResourceIT extends BaseIT {
 		assertNotNull("Response message should not be null", responseMessage);
 		String errorMessage = responseMessage.get("message").asText();
 		System.out.println("Response message is: " + responseMessage);
-		assertTrue("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_DATA, errorMessage.contains(PicsureNaming.ExceptionMessages.MISSING_DATA));
+		assertTrue("Error message should be " + ProtocolException.MISSING_DATA, errorMessage.contains(ProtocolException.MISSING_DATA));
 
 		//Should throw an error if missing targetURL
 		Map<String, String> queryNode = new HashMap<>();
@@ -133,7 +132,7 @@ public class HSAPIResourceIT extends BaseIT {
 //		responseMessage = objectMapper.readTree(response.getEntity().getContent());
 //		assertNotNull("Response message should not be null", responseMessage);
 //		errorMessage = responseMessage.get("message").asText();
-//		assertTrue("Error message should be " + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, errorMessage.contains(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL));
+//		assertTrue("Error message should be " + ApplicationException.MISSING_TARGET_URL, errorMessage.contains(ApplicationException.MISSING_TARGET_URL));
 
 		//Should throw error if no 'entity' included
 		body = objectMapper.writeValueAsString(queryRequest);

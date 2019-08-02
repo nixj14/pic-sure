@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
+import edu.harvard.dbmi.avillach.util.exception.NotAuthorizedException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
@@ -89,7 +89,7 @@ public class ResourceWebClientTest {
             cut.info(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }
         QueryRequest queryRequest = new QueryRequest();
         Map<String, String> credentials = new HashMap<>();
@@ -101,7 +101,7 @@ public class ResourceWebClientTest {
             cut.info(null, queryRequest);
             fail();
         } catch (ApplicationException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent());
+            assertEquals(ApplicationException.MISSING_RESOURCE_PATH, e.getContent());
         }
 
         //Should fail without a targetURL
@@ -111,7 +111,7 @@ public class ResourceWebClientTest {
 //            cut.info(MOCKITO_BASE_URL, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 
         //Assuming everything goes right
@@ -160,7 +160,7 @@ public class ResourceWebClientTest {
             cut.search(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }
 
         QueryRequest request = new QueryRequest();
@@ -168,7 +168,7 @@ public class ResourceWebClientTest {
             cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }
 
         request.setQuery("query");
@@ -177,7 +177,7 @@ public class ResourceWebClientTest {
 //            cut.search(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 
         String targetURL = "/search";
@@ -187,7 +187,7 @@ public class ResourceWebClientTest {
             cut.search(null, request);
             fail();
         } catch (ApplicationException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent());
+            assertEquals(ApplicationException.MISSING_RESOURCE_PATH, e.getContent());
         }
 
 //        //Should fail if no credentials given
@@ -209,7 +209,7 @@ public class ResourceWebClientTest {
             cut.search(MOCKITO_BASE_URL, request);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }*/
 
         //Should fail with no targetURL
@@ -222,7 +222,7 @@ public class ResourceWebClientTest {
 //            cut.search(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 
 //        request.setTargetURL(targetURL);
@@ -272,7 +272,7 @@ public class ResourceWebClientTest {
             cut.query(MOCKITO_BASE_URL, null);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }
         QueryRequest request = new QueryRequest();
 //        request.setTargetURL("/query");
@@ -281,7 +281,7 @@ public class ResourceWebClientTest {
             cut.query(null, request);
             fail();
         } catch (ApplicationException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent());
+            assertEquals(ApplicationException.MISSING_RESOURCE_PATH, e.getContent());
         }
 
         //Should fail if no credentials given
@@ -300,7 +300,7 @@ public class ResourceWebClientTest {
 //            cut.query(MOCKITO_BASE_URL, request);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 
 //        request.setTargetURL("/query");
@@ -355,7 +355,7 @@ public class ResourceWebClientTest {
 //            cut.queryResult(MOCKITO_BASE_URL, testId, null);
 //            fail();
 //        } catch (ProtocolException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+//            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
 //        }
         QueryRequest queryRequest = new QueryRequest();
         Map<String, String> credentials = new HashMap<>();
@@ -368,13 +368,13 @@ public class ResourceWebClientTest {
 //            cut.queryResult(MOCKITO_BASE_URL, null, queryRequest);
 //            fail();
 //        } catch (ProtocolException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_QUERY_ID, e.getContent());
+//            assertEquals(ProtocolException.MISSING_QUERY_ID, e.getContent());
 //        }
 //        try {
 //            cut.queryResult(null, testId, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent());
+//            assertEquals(ApplicationException.MISSING_RESOURCE_PATH, e.getContent());
 //        }
 
 ////        queryRequest.setTargetURL(null);
@@ -383,7 +383,7 @@ public class ResourceWebClientTest {
 //            cut.queryResult(MOCKITO_BASE_URL, testId, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 //
 ////        queryRequest.setTargetURL(targetURL);
@@ -430,7 +430,7 @@ public class ResourceWebClientTest {
             cut.queryStatus(MOCKITO_BASE_URL, testId, null);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent());
+            assertEquals(ProtocolException.MISSING_DATA, e.getContent());
         }
         QueryRequest queryRequest = new QueryRequest();
         Map<String, String> credentials = new HashMap<>();
@@ -443,13 +443,13 @@ public class ResourceWebClientTest {
             cut.queryStatus(MOCKITO_BASE_URL,null, queryRequest);
             fail();
         } catch (ProtocolException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_QUERY_ID, e.getContent());
+            assertEquals(ProtocolException.MISSING_QUERY_ID, e.getContent());
         }
         try {
             cut.queryStatus(null, testId, queryRequest);
             fail();
         } catch (ApplicationException e) {
-            assertEquals(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent());
+            assertEquals(ApplicationException.MISSING_RESOURCE_PATH, e.getContent());
         }
 
 //        queryRequest.setTargetURL(null);
@@ -459,7 +459,7 @@ public class ResourceWebClientTest {
 //            cut.queryStatus(MOCKITO_BASE_URL, testId, queryRequest);
 //            fail();
 //        } catch (ApplicationException e) {
-//            assertEquals(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent());
+//            assertEquals(ApplicationException.MISSING_TARGET_URL, e.getContent());
 //        }
 
 
@@ -504,5 +504,3 @@ public class ResourceWebClientTest {
         }
     }
 }
-
-

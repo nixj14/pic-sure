@@ -9,7 +9,6 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.dbmi.avillach.domain.*;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
@@ -108,7 +107,6 @@ public class HSAPIResourceRS implements IResourceRS
 	@GET
 	@Path("/status")
 	public Response status() {
-		// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 		return Response.ok().build();
 	}
 
@@ -160,16 +158,16 @@ public class HSAPIResourceRS implements IResourceRS
 	public Response querySync(QueryRequest resultRequest) {
 		logger.debug("calling HSAPI Resource querySync()");
 		if (targetURL == null || targetURL.isEmpty()){
-			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_TARGET_URL);
+			throw new ApplicationException(ApplicationException.MISSING_TARGET_URL);
 		}
 
         if (resultRequest == null){
-            throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
+            throw new ProtocolException(ProtocolException.MISSING_DATA);
         }
 
 		Object queryObject = resultRequest.getQuery();
 		if (queryObject == null) {
-			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
+			throw new ProtocolException(ProtocolException.MISSING_DATA);
 		}
 
 		String path = buildPath(resultRequest);
@@ -177,11 +175,9 @@ public class HSAPIResourceRS implements IResourceRS
 		HttpResponse response = retrieveGetResponse(path, headers);
 		if (response.getStatusLine().getStatusCode() != 200) {
 			logger.error(targetURL + " did not return a 200: {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, targetURL);
 		}
 		try {
-			// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 			return Response.ok(response.getEntity().getContent()).build();
 		} catch (IOException e){
 			throw new ResourceInterfaceException("Unable to read the resource response: " + e.getMessage());

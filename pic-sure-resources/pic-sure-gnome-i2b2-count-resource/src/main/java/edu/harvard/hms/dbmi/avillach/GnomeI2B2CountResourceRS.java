@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
+import edu.harvard.dbmi.avillach.util.exception.NotAuthorizedException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.http.Header;
@@ -72,7 +72,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 	@GET
 	@Path("/status")
 	public Response status() {
-		// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 		return Response.ok().build();
 	}
 
@@ -100,20 +99,20 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 	public QueryStatus query(QueryRequest queryJson) {
 		logger.debug("Calling Gnome-I2B2-Count Resource query()");
 		if (queryJson == null) {
-			throw new ProtocolException(PicsureNaming.ExceptionMessages.MISSING_DATA);
+			throw new ProtocolException(ProtocolException.MISSING_DATA);
 		}
 		Map<String, String> resourceCredentials = queryJson.getResourceCredentials();
 		if (resourceCredentials == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
 		}
 		String token = resourceCredentials.get(GNOME_BEARER_TOKEN_KEY);
 		if (token == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for gNOME");
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for gNOME");
 		}
 
 		Object queryObject = queryJson.getQuery();
 		if (queryObject == null) {
-			throw new ProtocolException((PicsureNaming.ExceptionMessages.MISSING_DATA));
+			throw new ProtocolException((ProtocolException.MISSING_DATA));
 		}
 
 		QueryStatus result = new QueryStatus();
@@ -124,7 +123,7 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 
 		JsonNode query = queryNode.get(GNOME);
 		if (query == null){
-			throw new ProtocolException((PicsureNaming.ExceptionMessages.MISSING_DATA  + " for gNOME"));
+			throw new ProtocolException((ProtocolException.MISSING_DATA  + " for gNOME"));
 		} else {
 			queryString = query.toString();
 		}
@@ -132,7 +131,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 		String pathName = "/queryService/runQuery";
 		HttpResponse response = retrievePostResponse(TARGET_GNOME_URL + pathName, createAuthorizationHeader(token), queryString);
 		if (response.getStatusLine().getStatusCode() != 200) {
-			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, TARGET_GNOME_URL);
 		}
 		try {
@@ -148,19 +146,18 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 
 		query = queryNode.get(I2B2);
 		if (query == null){
-			throw new ProtocolException((PicsureNaming.ExceptionMessages.MISSING_DATA + " for I2B2"));
+			throw new ProtocolException((ProtocolException.MISSING_DATA + " for I2B2"));
 		} else {
 			queryString = query.toString();
 		}
 
 		token = resourceCredentials.get(I2B2_BEARER_TOKEN_KEY);
 		if (token == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for I2B2");
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for I2B2");
 		}
 		pathName = "/queryService/runQuery";
 		response = retrievePostResponse(TARGET_I2B2_URL + pathName, createAuthorizationHeader(token), queryString);
 		if (response.getStatusLine().getStatusCode() != 200) {
-			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, TARGET_I2B2_URL);
 		}
 		try {
@@ -192,15 +189,15 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 	public QueryStatus queryStatus(@PathParam("resourceQueryId") String queryId, QueryRequest statusRequest) {
 		logger.debug("calling Gnome-I2B2-Count Resource queryStatus() for query {}", queryId);
 		if (statusRequest == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
 		}
 		Map<String, String> resourceCredentials = statusRequest.getResourceCredentials();
 		if (resourceCredentials == null){
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
 		}
 		String token = resourceCredentials.get(GNOME_BEARER_TOKEN_KEY);
 		if (token == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for gNOME");
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for gNOME");
 		}
 
 		QueryStatus statusResponse = new QueryStatus();
@@ -215,7 +212,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 		String pathName = "/resultService/resultStatus/" + gnomeId;
 		HttpResponse response = retrieveGetResponse(TARGET_GNOME_URL + pathName, createAuthorizationHeader(token));
 		if (response.getStatusLine().getStatusCode() != 200) {
-			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 			throwResponseError(response, TARGET_GNOME_URL);
 		}
 		try {
@@ -225,7 +221,7 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 
 			token = resourceCredentials.get(I2B2_BEARER_TOKEN_KEY);
 			if (token == null) {
-				throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for I2B2");
+				throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for I2B2");
 			}
 			String i2b2Id = queryIds.get(I2B2);
 			if (i2b2Id == null){
@@ -234,7 +230,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 			pathName = "/resultService/resultStatus/" + i2b2Id;
 			response = retrieveGetResponse(TARGET_I2B2_URL + pathName, createAuthorizationHeader(token));
 			if (response.getStatusLine().getStatusCode() != 200) {
-				// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
 				throwResponseError(response, TARGET_I2B2_URL);
 			}
 			responseNode = json.readTree(response.getEntity().getContent());
@@ -242,7 +237,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 			if (!PicSureStatus.ERROR.equals(statusResponse.getStatus())){
 				PicSureStatus picsureStatus = mapStatus(responseNode.get("status").asText());
 				if (PicSureStatus.ERROR.equals(picsureStatus)){
-					// TODO - ARCHITECTURE - Will this statement ever run given the previous IF statement? [nbenik]
 					statusResponse.setStatus(PicSureStatus.ERROR);
 				} else if (PicSureStatus.PENDING.equals(picsureStatus) || PicSureStatus.PENDING.equals(statusResponse.getStatus())){
 					statusResponse.setStatus(PicSureStatus.PENDING);
@@ -267,15 +261,15 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 	public Response queryResult(@PathParam("resourceQueryId") String queryId, QueryRequest resultRequest) {
 		logger.debug("calling Gnome-I2B2-Count Resource queryResult() for query {}", queryId);
 		if (resultRequest == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
 		}
 		Map<String, String> resourceCredentials = resultRequest.getResourceCredentials();
 		if (resourceCredentials == null){
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS);
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS);
 		}
 		String token = resourceCredentials.get(GNOME_BEARER_TOKEN_KEY);
 		if (token == null) {
-			throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for gNOME");
+			throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for gNOME");
 		}
 
 		HashMap<String, String> queryIds = getMetadata(queryId, token);
@@ -287,8 +281,7 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 		String pathName = "/resultService/result/" + gnomeId + "/JSON";
 		HttpResponse response = retrieveGetResponse(TARGET_GNOME_URL + pathName, createAuthorizationHeader(token));
 		if (response.getStatusLine().getStatusCode() != 200) {
-			// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
-			throwResponseError(response, TARGET_GNOME_URL + pathName);
+			throwResponseError(response, TARGET_GNOME_URL);
 		}
 
 		int responseCount = 0;
@@ -312,7 +305,7 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 
 			token = resourceCredentials.get(I2B2_BEARER_TOKEN_KEY);
 			if (token == null) {
-				throw new NotAuthorizedException(PicsureNaming.ExceptionMessages.MISSING_CREDENTIALS + " for I2B2");
+				throw new NotAuthorizedException(NotAuthorizedException.MISSING_CREDENTIALS + " for I2B2");
 			}
 			String i2b2Id = queryIds.get(I2B2);
 			if (i2b2Id == null){
@@ -321,8 +314,7 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 			pathName = "/resultService/result/" + i2b2Id + "/JSON";
 			response = retrieveGetResponse(TARGET_I2B2_URL + pathName, createAuthorizationHeader(token));
 			if (response.getStatusLine().getStatusCode() != 200) {
-				// TODO: ERROR REFACTOR - is this using the standard exception handling? [nbenik]
-				throwResponseError(response, TARGET_I2B2_URL + pathName);
+				throwResponseError(response, TARGET_I2B2_URL);
 			}
 
 			/* The response should look something like this:
@@ -361,7 +353,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 			throw new ApplicationException("Unable to read query status");
 		}
 
-		// TODO: STANDARDIZED RETURN - should we change this? [nbenik]
 		return Response.ok(responseCount).build();
 	}
 
@@ -382,7 +373,6 @@ public class GnomeI2B2CountResourceRS implements IResourceRS
 			case "ERROR":
 				return PicSureStatus.ERROR;
 			default:
-				// TODO: ARCHITECTURE - Shouldn't we throw an error if an undefined status is returned? [nbenik]
 				return null;
 		}
 

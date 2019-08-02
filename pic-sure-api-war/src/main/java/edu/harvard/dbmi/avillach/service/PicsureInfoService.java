@@ -4,7 +4,6 @@ import edu.harvard.dbmi.avillach.data.entity.Resource;
 import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
 import edu.harvard.dbmi.avillach.domain.ResourceInfo;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.slf4j.Logger;
@@ -34,10 +33,10 @@ public class PicsureInfoService {
 	public ResourceInfo info(UUID resourceId, QueryRequest credentialsQueryRequest) {
 		Resource resource = resourceRepo.getById(resourceId);
 		if (resource == null){
-			throw new ProtocolException(PicsureNaming.ExceptionMessages.RESOURCE_NOT_FOUND + resourceId.toString());
+			throw new ProtocolException(ProtocolException.RESOURCE_NOT_FOUND + resourceId.toString());
 		}
 		if (resource.getResourceRSPath() == null){
-			throw new ApplicationException(PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH);
+			throw new ApplicationException(ApplicationException.MISSING_RESOURCE_PATH);
 		}
 		if (credentialsQueryRequest == null){
 			credentialsQueryRequest = new QueryRequest();
