@@ -18,6 +18,38 @@
 		<jackson.version>2.9.4</jackson.version>
 		<picsure.2.token>eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmb29AYmFyLmNvbSIsImlzcyI6ImJhciIsImV4cCI6ODY1NTI4Mzk4NTQzLCJpYXQiOjE1Mjg0ODQ5NDMsImp0aSI6IkZvbyIsImVtYWlsIjoiZm9vQGJhci5jb20ifQ.KE2NIfCzQnd_vhykhb0sHdPHEwvy2Wphc4UVsKAVTgM</picsure.2.token>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!--
+		*****************************************************************************************
+		THIS IS THE ONLY PLACE YOU SHOULD SET CONFIGURATION VARIABLES FOR UNIT/INTEGRATION TESTS!
+		*****************************************************************************************
+		-->
+
+		<mockito.cfg.base_url>http://localhost:8079</mockito.cfg.base_url>
+
+		<picsure.cfg.endpoint_url>http://localhost:8080/${project.artifactId}-${project.version}/PICSURE</picsure.cfg.endpoint_url>
+		<picsure.cfg.client_secret>this_value_does_not_matter_for_testing</picsure.cfg.client_secret>
+		<picsure.cfg.user_id_claim>email</picsure.cfg.user_id_claim>
+		<picsure.cfg.roles_claim>privileges</picsure.cfg.roles_claim>
+		<picsure.cfg.verify_user_method>sessionFilter</picsure.cfg.verify_user_method>
+		<picsure.cfg.token_introspection_url>http://localhost:8080/${project.artifactId}-${project.version}/PICSURE/token/inspect</picsure.cfg.token_introspection_url>
+		<picsure.cfg.token_introspection_token>this_value_does_not_matter_for_testing</picsure.cfg.token_introspection_token>
+
+		<irct.cfg.result_format>JSON</irct.cfg.result_format>				<!-- RESULT_FORMAT -->
+		<irct.cfg.rs_url>http://localhost:8080/pic-sure-irct-resource-${project.version}/pic-sure/v1.4</irct.cfg.rs_url>	<!-- IRCT_RS_URL -->
+		<irct.cfg.token>eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjg3OTM1NTE5NjI0LCJzdWIiOiJpbnRlZ3JhdGlvbi50ZXN0QGhtcy5oYXJ2YXJkLmVkdSIsImVtYWlsIjoiaW50ZWdyYXRpb24udGVzdEBobXMuaGFydmFyZC5lZHUiLCJpc3MiOiJiYXIiLCJqdGkiOiJGb28iLCJpYXQiOjE1MzU2MDYwMjR9.RUKkN5_Bsd5MWHhV_YTnotoMqTtrOLszsBTN9FC4n48</irct.cfg.token>
+
+		<gnome.cfg.i2b2_rs_url>http://localhost:8080/pic-sure-gnome-i2b2-count-resource-${project.version}/pic-sure/gnome-i2b2-count</gnome.cfg.i2b2_rs_url> <!-- GNOME_I2B2_RS_URL -->
+
+		<i2b2.cfg.label>Patient Id</i2b2.cfg.label>							<!-- I2B2_LABEL -->
+
+		<aggregate.cfg.rs_url>http://localhost:8080/pic-sure-aggregate-resource-${project.version}/pic-sure/group</aggregate.cfg.rs_url>	<!-- AGGREGATE_RS_URL -->
+
+		<ga4gh.cfg.result_format>JSON</ga4gh.cfg.result_format>
+
+		<!-- are these duplicate definitions? -->
+		<picsure.cfg.token>${picsure.2.token}</picsure.cfg.token>			<!-- PICSURE_2_TOKEN -->
+
 	</properties>
 	<build>
 		<pluginManagement>

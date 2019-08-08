@@ -14,6 +14,18 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+    <build>
+        <testOutputDirectory>${project.build.directory}/classes</testOutputDirectory>
+        <filters>
+            <filter>src/test/resources/testing.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
   <dependencies>
       <dependency>
           <groupId>edu.harvard.hms.dbmi.avillach</groupId>
@@ -67,7 +79,5 @@
           <version>1.5.20</version>
           <scope>compile</scope>
       </dependency>
-
-
   </dependencies>
 </project>

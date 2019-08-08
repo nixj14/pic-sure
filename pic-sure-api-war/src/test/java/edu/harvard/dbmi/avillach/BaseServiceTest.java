@@ -2,13 +2,12 @@ package edu.harvard.dbmi.avillach;
 
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.junit.BeforeClass;
-
 import org.junit.Ignore;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 @Ignore
 public class BaseServiceTest {
@@ -17,13 +16,13 @@ public class BaseServiceTest {
 
     @BeforeClass
     public static void beforeClass() {
-        // nbenik - use JDNI contexts
+        InputStream testConfiguration = BaseServiceTest.class.getClassLoader().getResourceAsStream("testing.properties");
+        Properties testProperties  = new Properties();
         try {
-            Context ctx = new InitialContext();
-            PICSURE_ENDPOINT_URL = (String) ctx.lookup("global/picsure_url");
-            ctx.close();
-        } catch (NamingException e) {
-            throw new RuntimeException("Could not find setting(s) in JDNI!");
+            testProperties.load(testConfiguration);
+            PICSURE_ENDPOINT_URL = (String) testProperties.getProperty("picsure_url");
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading configuration values from 'testing.properties'");
         }
 
         //Need to be able to throw exceptions without container so we can verify correct errors are being thrown

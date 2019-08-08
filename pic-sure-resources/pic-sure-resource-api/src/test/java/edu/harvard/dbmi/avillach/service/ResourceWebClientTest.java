@@ -15,18 +15,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import wiremock.com.google.common.io.Resources;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -42,7 +43,9 @@ public class ResourceWebClientTest {
     private final ResourceWebClient cut = new ResourceWebClient();
     private static String MOCKITO_BASE_URL;
     private static int MOCKITO_PORT;
-    public  static WireMockClassRule wireMockRule;
+
+    @Rule
+    public WireMockClassRule wireMockRule = new WireMockClassRule(MOCKITO_PORT);
 
 
     @BeforeClass
@@ -51,27 +54,24 @@ public class ResourceWebClientTest {
         RuntimeDelegate runtimeDelegate = new RuntimeDelegateImpl();
         RuntimeDelegate.setInstance(runtimeDelegate);
 
-        // nbenik - use JDNI contexts but fallback to POM systemPropertyVariables
+        // Load the properties file values needed for unit testing
         try {
-            Context ctx = new InitialContext();
-            MOCKITO_BASE_URL = (String) ctx.lookup("java:global/mockito_base_url");
+            InputStream testConfiguration = ResourceWebClientTest.class.getClassLoader().getResourceAsStream("testing.properties");
+            Properties testProperties  = new Properties();
+            testProperties.load(testConfiguration);
+
+            MOCKITO_BASE_URL = (String) testProperties.getProperty("mockito_base_url");
             try {
                 URL temp_url = new URL(MOCKITO_BASE_URL);
-                MOCKITO_PORT = temp_url.getDefaultPort();
+                MOCKITO_PORT = temp_url.getPort();
             } catch (MalformedURLException e2) {
-                throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
+                throw new RuntimeException("Mockito_base_url is malformed!");
             }
-            ctx.close();
-        } catch (NamingException e1) {
-            MOCKITO_BASE_URL = (String) System.getProperty("mockito_base_url");
-            try {
-                URL temp_url = new URL(MOCKITO_BASE_URL);
-                MOCKITO_PORT = temp_url.getDefaultPort();
-            } catch (MalformedURLException e2) {
-                throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
-            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Error accessing file named 'testing.properties'");
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading configuration values from 'testing.properties'");
         }
-        throw new RuntimeException("We executed constructor");
     }
 
     @Test

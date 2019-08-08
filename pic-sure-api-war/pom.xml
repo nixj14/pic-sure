@@ -86,6 +86,16 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<testOutputDirectory>${project.build.directory}/classes</testOutputDirectory>
+		<filters>
+			<filter>src/test/resources/testing.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
