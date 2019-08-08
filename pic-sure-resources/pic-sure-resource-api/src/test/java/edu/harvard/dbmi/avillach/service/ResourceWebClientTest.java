@@ -42,35 +42,36 @@ public class ResourceWebClientTest {
     private final ResourceWebClient cut = new ResourceWebClient();
     private static String MOCKITO_BASE_URL;
     private static int MOCKITO_PORT;
+    public  static WireMockClassRule wireMockRule;
 
-    public void ResourceWebClientTest() {
-        // this runs before @Rule and other jUnit stuff
-        // nbenik - use JDNI contexts
+
+    @BeforeClass
+    public static void beforeClass() {
+        //Need to be able to throw exceptions without container so we can verify correct errors are being thrown
+        RuntimeDelegate runtimeDelegate = new RuntimeDelegateImpl();
+        RuntimeDelegate.setInstance(runtimeDelegate);
+
+        // nbenik - use JDNI contexts but fallback to POM systemPropertyVariables
         try {
             Context ctx = new InitialContext();
             MOCKITO_BASE_URL = (String) ctx.lookup("java:global/mockito_base_url");
             try {
                 URL temp_url = new URL(MOCKITO_BASE_URL);
                 MOCKITO_PORT = temp_url.getDefaultPort();
-            } catch (MalformedURLException e) {
+            } catch (MalformedURLException e2) {
                 throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
             }
             ctx.close();
-        } catch (NamingException e) {
-            throw new RuntimeException("could not find setting in JDNI");
+        } catch (NamingException e1) {
+            MOCKITO_BASE_URL = (String) System.getProperty("mockito_base_url");
+            try {
+                URL temp_url = new URL(MOCKITO_BASE_URL);
+                MOCKITO_PORT = temp_url.getDefaultPort();
+            } catch (MalformedURLException e2) {
+                throw new RuntimeException("Mockito_base_url is malformed in JDNI setting!");
+            }
         }
-    }
-
-    @Rule
-    public WireMockClassRule wireMockRule = new WireMockClassRule(MOCKITO_PORT);
-
-
-    @BeforeClass
-    public static void beforeClass() {
-
-        //Need to be able to throw exceptions without container so we can verify correct errors are being thrown
-        RuntimeDelegate runtimeDelegate = new RuntimeDelegateImpl();
-        RuntimeDelegate.setInstance(runtimeDelegate);
+        throw new RuntimeException("We executed constructor");
     }
 
     @Test

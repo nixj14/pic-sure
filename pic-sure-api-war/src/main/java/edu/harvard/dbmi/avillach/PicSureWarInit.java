@@ -13,7 +13,6 @@ import javax.ejb.ApplicationException;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
-import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

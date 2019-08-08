@@ -46,6 +46,10 @@
 						<argLine>
 							--illegal-access=permit
 						</argLine>
+						<systemPropertyVariables combine.children="append">
+							<!-- THIS IS WHERE VARIABLES USED BY UNIT TESTING (BUT NOT INTEGRATION TESTING) -->
+							<mockito_base_url>${mockito.cfg.base_url}</mockito_base_url>
+						</systemPropertyVariables>
 					</configuration>
 				</plugin>
 			</plugins>

@@ -4,7 +4,6 @@ import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
 import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.dbmi.avillach.service.PicsureSearchService;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
-import edu.harvard.dbmi.avillach.util.PicsureNaming;
 import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.junit.Before;
@@ -71,7 +70,7 @@ public class PicsureSearchServiceTest extends BaseServiceTest {
 //            fail("Missing request data should throw an error");
 //        } catch (ApplicationException e){
 //            assertNotNull(e.getContent());
-//            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_TARGET_URL + "'", PicsureNaming.ExceptionMessages.MISSING_TARGET_URL, e.getContent().toString());
+//            assertEquals("Error message should say '" + ApplicationException.MISSING_TARGET_URL + "'", ApplicationException.MISSING_TARGET_URL, e.getContent().toString());
 //        }
 
 //        when(mockResource.getTargetURL()).thenReturn("testUrl");
@@ -82,7 +81,7 @@ public class PicsureSearchServiceTest extends BaseServiceTest {
             fail("Missing request data should throw an error");
         } catch (ApplicationException e){
             assertNotNull(e.getContent());
-            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH + "'", PicsureNaming.ExceptionMessages.MISSING_RESOURCE_PATH, e.getContent().toString());
+            assertEquals("Error message should say '" + ApplicationException.MISSING_RESOURCE_PATH + "'", ApplicationException.MISSING_RESOURCE_PATH, e.getContent().toString());
         }
 
         when(mockResource.getResourceRSPath()).thenReturn("resourceRsPath");
@@ -93,7 +92,7 @@ public class PicsureSearchServiceTest extends BaseServiceTest {
             fail("Missing request data should throw an error");
         } catch (ProtocolException e){
             assertNotNull(e.getContent());
-            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_DATA + "'", PicsureNaming.ExceptionMessages.MISSING_DATA, e.getContent().toString());
+            assertEquals("Error message should say '" + ProtocolException.MISSING_DATA + "'", ProtocolException.MISSING_DATA, e.getContent().toString());
         }
 
         //Missing resourceId should error
@@ -102,7 +101,7 @@ public class PicsureSearchServiceTest extends BaseServiceTest {
             fail("Missing resourceId should throw an error");
         } catch (ProtocolException e){
             assertNotNull(e.getContent());
-            assertEquals("Error message should say '" + PicsureNaming.ExceptionMessages.MISSING_RESOURCE_ID + "'", PicsureNaming.ExceptionMessages.MISSING_RESOURCE_ID, e.getContent().toString());
+            assertEquals("Error message should say '" + ProtocolException.MISSING_RESOURCE_ID + "'", ProtocolException.MISSING_RESOURCE_ID, e.getContent().toString());
 
         }
 
@@ -112,7 +111,7 @@ public class PicsureSearchServiceTest extends BaseServiceTest {
             fail("Nonexistent resourceId should throw an error");
         } catch (ProtocolException e){
             assertNotNull(e.getContent());
-            assertTrue("Error message should say '" + PicsureNaming.ExceptionMessages.RESOURCE_NOT_FOUND + "'", e.getContent().toString().contains(PicsureNaming.ExceptionMessages.RESOURCE_NOT_FOUND));
+            assertTrue("Error message should say '" + ProtocolException.RESOURCE_NOT_FOUND + "'", e.getContent().toString().contains(ProtocolException.RESOURCE_NOT_FOUND));
         }
 
         //This should work
