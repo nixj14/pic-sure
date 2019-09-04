@@ -17,6 +17,10 @@ import static org.junit.Assert.*;
 
 public class PicsureInfoServiceIT extends BaseIT {
 
+    public PicsureInfoServiceIT() {
+        super();
+    }
+
     @Test
     public void testInfoEndpoints() throws Exception {
         //We don't know what resource we fetched, so we don't want to actually try to reach it

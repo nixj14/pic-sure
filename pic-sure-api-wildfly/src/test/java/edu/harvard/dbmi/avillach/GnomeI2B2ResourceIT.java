@@ -8,7 +8,6 @@ import edu.harvard.hms.dbmi.avillach.GnomeI2B2CountResourceRS;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -18,9 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.retrieveGetResponse;
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.retrievePostResponse;
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.composeURL;
+import static edu.harvard.dbmi.avillach.util.HttpClientUtil.*;
 import static org.junit.Assert.*;
 
 //Need tests executed in order to fill in variables for later tests
@@ -94,8 +91,12 @@ public class GnomeI2B2ResourceIT extends BaseIT {
     private static String i2b2ResultId = "2355911";
     private static String errorResultId = "2003913";
 
-    @BeforeClass
-    public static void setUp() throws IOException{
+    public GnomeI2B2ResourceIT() {
+        super();
+    }
+
+    @Test
+    public void init() throws IOException{
         //Will need to know the resource uuid
         String jwt = generateJwtForSystemUser();
         headers[0] = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt);

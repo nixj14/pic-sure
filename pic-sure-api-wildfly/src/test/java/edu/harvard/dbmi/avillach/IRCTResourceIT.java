@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.harvard.dbmi.avillach.domain.QueryFormat;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
 import edu.harvard.dbmi.avillach.domain.QueryStatus;
-import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
+import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.hms.dbmi.avillach.IRCTResourceRS;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -53,6 +52,10 @@ public class IRCTResourceIT extends BaseIT {
     //This is a previously created query id, uncertain if this is the best way to go
 	private String testQueryResultId = "231066";
 	private final String targetURL = "http://localhost:8079";
+
+	public IRCTResourceIT() {
+		super();
+	}
 
 	@Test
 	public void testStatus() throws UnsupportedOperationException, IOException {

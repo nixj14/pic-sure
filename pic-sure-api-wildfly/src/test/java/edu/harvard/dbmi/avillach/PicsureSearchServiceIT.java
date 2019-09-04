@@ -19,6 +19,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class PicsureSearchServiceIT extends BaseIT{
 
+    public PicsureSearchServiceIT() {
+        super();
+    }
+
     @Test
     public void testSearch() throws Exception {
         //We don't know what resource we fetched, so we don't want to actually try to reach it

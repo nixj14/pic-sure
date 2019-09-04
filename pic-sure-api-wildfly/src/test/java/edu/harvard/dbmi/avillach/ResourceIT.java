@@ -1,18 +1,24 @@
 package edu.harvard.dbmi.avillach;
 
-import static org.junit.Assert.*;
-
+import edu.harvard.dbmi.avillach.data.entity.Resource;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 
-import edu.harvard.dbmi.avillach.data.entity.Resource;
-
 import javax.ws.rs.core.HttpHeaders;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ResourceIT extends BaseIT{
 
+	public ResourceIT() {
+		super();
+	}
+
 	@Test
 	public void testListResources() throws Exception {
+
+
 
 		String jwt = generateJwtForSystemUser();
 		HttpGet get = new HttpGet(endpointUrl + "/info/resources");

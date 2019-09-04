@@ -3,9 +3,7 @@ package edu.harvard.dbmi.avillach;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
-import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.junit.Test;
@@ -24,6 +22,10 @@ public class HSAPIResourceIT extends BaseIT {
 
 	private final String targetURL = "http://localhost:8079";
 	private Header[] headers;
+
+	public HSAPIResourceIT() {
+		super();
+	}
 
 	@Test
 	public void testStatus() throws UnsupportedOperationException {

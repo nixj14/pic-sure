@@ -1,18 +1,22 @@
 package edu.harvard.dbmi.avillach;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import javax.ws.rs.core.HttpHeaders;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 
+import javax.ws.rs.core.HttpHeaders;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 
 public class SystemServiceIT extends BaseIT {
+
+	public SystemServiceIT() {
+		super();
+	}
 
 	@Test
 	public void testStatusIsAccessibleToSystemUser() throws Exception {

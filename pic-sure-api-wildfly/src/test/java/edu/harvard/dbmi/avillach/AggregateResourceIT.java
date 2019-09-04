@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.harvard.dbmi.avillach.domain.QueryRequest;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
 import edu.harvard.hms.dbmi.avillach.IRCTResourceRS;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -18,11 +16,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.composeURL;
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.retrieveGetResponse;
-import static edu.harvard.dbmi.avillach.util.HttpClientUtil.retrievePostResponse;
-
+import static edu.harvard.dbmi.avillach.util.HttpClientUtil.*;
 import static org.junit.Assert.*;
 
 //Need tests executed in order to fill in variables for later tests
@@ -76,8 +70,12 @@ public class AggregateResourceIT extends BaseIT {
     private static String queryId;
     private static String status;
 
-    @BeforeClass
-    public static void setUp() throws IOException{
+    public AggregateResourceIT(){
+        super();
+    }
+
+    @Test
+    public void init() throws IOException{
         HttpResponse response = retrieveGetResponse(endpointUrl+"/info/resources", headers);
         assertEquals("Response status code should be 200", 200, response.getStatusLine().getStatusCode());
         List<JsonNode> responseBody = objectMapper.readValue(response.getEntity().getContent(), new TypeReference<List<JsonNode>>(){});

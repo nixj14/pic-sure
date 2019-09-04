@@ -323,6 +323,9 @@
 								<RESULT_FORMAT>JSON</RESULT_FORMAT>
 								<PIC_SURE_CLIENT_SECRET>foo</PIC_SURE_CLIENT_SECRET>
 								<PIC_SURE_USER_ID_CLAIM>email</PIC_SURE_USER_ID_CLAIM>
+                                <TOKEN_INTROSPECTION_URL>http://localhost:8079/token/introspection</TOKEN_INTROSPECTION_URL>
+                                <TOKEN_INTROSPECTION_TOKEN>token.introspection.token</TOKEN_INTROSPECTION_TOKEN>
+                                <VERIFY_USER_METHOD>tokenIntrospection</VERIFY_USER_METHOD>
 							</env>
 							<!--<skip>${skipIT}</skip>-->
 						</configuration>

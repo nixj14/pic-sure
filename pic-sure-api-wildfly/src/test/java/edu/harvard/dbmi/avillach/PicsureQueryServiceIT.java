@@ -28,6 +28,10 @@ public class PicsureQueryServiceIT extends BaseIT {
     //This only needs to be a jsonnode, does not need to be a fully functional query
     private static final String queryString = "{  \"select\": \"alias\"        }";
 
+    public PicsureQueryServiceIT() {
+        super();
+    }
+
     @Test
     public void testQuery() throws Exception {
         //We don't know what resource we fetched, so we don't want to actually try to reach it
